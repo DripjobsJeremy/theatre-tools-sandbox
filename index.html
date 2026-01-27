@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TOOTSIE - Page Finder</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --pink: #e91e63;
+            --pink-light: #fce4ec;
+            --blue: #2196f3;
+            --blue-light: #e3f2fd;
+            --gold: #ffc107;
+            --gold-light: #fff8e1;
+            --green: #4caf50;
+            --gray: #757575;
+            --gray-light: #f5f5f5;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--pink-light) 0%, #fff 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--pink);
+            color: white;
+            padding: 16px 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            margin: 4px 0 0;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .search-container {
+            padding: 16px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 8px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 14px 16px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--pink);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .filter-tab.active {
+            background: var(--pink);
+            color: white;
+        }
+
+        .filter-tab:not(.active) {
+            background: var(--gray-light);
+            color: var(--gray);
+        }
+
+        .act-selector {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            background: var(--gray-light);
+        }
+
+        .act-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .act-btn.act1 {
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+
+        .act-btn.act1.active {
+            background: var(--blue);
+            color: white;
+        }
+
+        .act-btn.act2 {
+            background: var(--gold-light);
+            color: #f57c00;
+        }
+
+        .act-btn.act2.active {
+            background: var(--gold);
+            color: #333;
+        }
+
+        .act-btn.all {
+            background: var(--pink-light);
+            color: var(--pink);
+        }
+
+        .act-btn.all.active {
+            background: var(--pink);
+            color: white;
+        }
+
+        .results {
+            padding: 16px;
+        }
+
+        .result-count {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 12px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .card:active {
+            transform: scale(0.98);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: linear-gradient(90deg, var(--blue-light), var(--pink-light));
+        }
+
+        .card-header.act2 {
+            background: linear-gradient(90deg, var(--gold-light), var(--pink-light));
+        }
+
+        .act-scene {
+            display: flex;
+            gap: 8px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .badge.act {
+            background: var(--blue);
+            color: white;
+        }
+
+        .badge.act.act2 {
+            background: var(--gold);
+            color: #333;
+        }
+
+        .badge.scene {
+            background: white;
+            color: #333;
+        }
+
+        .song-num {
+            background: var(--pink);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .description {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+
+        .song-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .page-numbers {
+            display: flex;
+            gap: 12px;
+        }
+
+        .page-box {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .page-box.script {
+            background: var(--blue-light);
+        }
+
+        .page-box.libretto {
+            background: var(--pink-light);
+        }
+
+        .page-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .page-num {
+            font-size: 28px;
+            font-weight: 800;
+            color: #333;
+        }
+
+        .characters {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .characters strong {
+            color: #333;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .no-results .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .quick-jump {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: var(--pink);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(233, 30, 99, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .song-only .description,
+        .song-only .characters {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .results {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>TOOTSIE</h1>
+        <p>Script & Libretto Page Finder</p>
+    </div>
+
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search song, scene, or page #...">
+        </div>
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">All</button>
+            <button class="filter-tab" data-filter="songs">Songs Only</button>
+            <button class="filter-tab" data-filter="scenes">Scenes Only</button>
+        </div>
+    </div>
+
+    <div class="act-selector">
+        <button class="act-btn all active" data-act="all">All</button>
+        <button class="act-btn act1" data-act="1">ACT I</button>
+        <button class="act-btn act2" data-act="2">ACT II</button>
+    </div>
+
+    <div class="results" id="results">
+        <!-- Cards will be inserted here -->
+    </div>
+
+    <button class="quick-jump" id="scrollTop" style="display:none;">↑</button>
+
+    <script>
+        // TOOTSIE Scene & Music Breakdown Data
+        const showData = [
+            // ACT I
+            { act: 1, scene: 1, scriptPg: "1-4", description: "A Broadway Stage - Present Day", songNum: 1, songTitle: "Opening", librettoPg: "1-9", characters: "Ensemble, Ron, Michael" },
+            { act: 1, scene: 2, scriptPg: "5-9", description: "Bar - Lunchtime", songNum: 2, songTitle: "Whaddya Do", librettoPg: "10-18", characters: "Michael, Jeff" },
+            { act: 1, scene: 3, scriptPg: "9-11", description: "M&J Apartment", songNum: 3, songTitle: "Unstoppable", librettoPg: "19-31", characters: "Michael, Jeff, Sandy" },
+            { act: 1, scene: 4, scriptPg: "12-13", description: "Stan's Office", songNum: null, songTitle: null, librettoPg: null, characters: "Michael, Stan" },
+            { act: 1, scene: 5, scriptPg: "14-23", description: "Recording Studio", songNum: 4, songTitle: "What's Gonna Happen", librettoPg: "32-46", characters: "Michael, Sandy, Max" },
+            { act: 1, scene: 5, scriptPg: "14-23", description: "Recording Studio", songNum: 5, songTitle: "I Won't Let You Down", librettoPg: "47-63", characters: "Dorothy, Ron, Rita, Susie" },
+            { act: 1, scene: 6, scriptPg: "24-25", description: "General Hospital - Dressing Room", songNum: null, songTitle: null, librettoPg: null, characters: "Dorothy, Julie" },
+            { act: 1, scene: 6, scriptPg: "24-25", description: "General Hospital - Stage", songNum: 6, songTitle: "I'm Alive", librettoPg: "64-69", characters: "Dorothy, Cast" },
+            { act: 1, scene: 7, scriptPg: "26-28", description: "Stan's Office", songNum: null, songTitle: null, librettoPg: null, characters: "Dorothy, Stan" },
+            { act: 1, scene: 7, scriptPg: "26-28", description: "Stan's Office", songNum: 7, songTitle: "There Was John", librettoPg: "70-73", characters: "Julie" },
+            { act: 1, scene: 8, scriptPg: "29-34", description: "General Hospital - Stage", songNum: 8, songTitle: "This Thing (Part 1)", librettoPg: "74-79", characters: "Ron, Rita, Susie, Dorothy" },
+            { act: 1, scene: 8, scriptPg: "29-34", description: "General Hospital - Hallway", songNum: null, songTitle: null, librettoPg: null, characters: "Dorothy, Julie, Max" },
+            { act: 1, scene: 9, scriptPg: "35-37", description: "General Hospital", songNum: 9, songTitle: "This Thing (Part 2)", librettoPg: "80-86", characters: "Ron, Rita, Susie, Max, Dorothy" },
+            { act: 1, scene: 9, scriptPg: "35-37", description: "General Hospital", songNum: 10, songTitle: "Like A Man (Rita's Song Part 1)", librettoPg: "87-93", characters: "Rita" },
+            { act: 1, scene: 10, scriptPg: "38-40", description: "Rehearsal Room", songNum: null, songTitle: null, librettoPg: null, characters: "Dorothy, Ensemble" },
+            { act: 1, scene: 10, scriptPg: "38-40", description: "Rehearsal Room", songNum: 10, songTitle: "Like A Man (Rita's Song Part 2)", librettoPg: "94-102", characters: "Dorothy, Ensemble" },
+            { act: 1, scene: 11, scriptPg: "41-44", description: "M&J Apartment / Broadway Stage - Crosscut", songNum: 11, songTitle: "Unstoppable (Reprise)", librettoPg: "103-109", characters: "Michael, Jeff" },
+            { act: 1, scene: 12, scriptPg: "45-48", description: "Bar", songNum: null, songTitle: null, librettoPg: null, characters: "Jeff, Sandy" },
+            { act: 1, scene: 12, scriptPg: "45-48", description: "Bar", songNum: 14, songTitle: "Gone, Gone, Gone", librettoPg: "110-121", characters: "Michael, Jeff, Sandy, Crew" },
+
+            // ACT II
+            { act: 2, scene: 1, scriptPg: "49-52", description: "Talk Show", songNum: null, songTitle: null, librettoPg: null, characters: "Dorothy, Host" },
+            { act: 2, scene: 2, scriptPg: "53-56", description: "M&J Apartment", songNum: 15, songTitle: "Who's That Girl?", librettoPg: "122-130", characters: "Jeff, Michael" },
+            { act: 2, scene: 3, scriptPg: "57-61", description: "M&J Apartment", songNum: null, songTitle: null, librettoPg: null, characters: "Max, Dorothy, Michael" },
+            { act: 2, scene: 3, scriptPg: "57-61", description: "M&J Apartment", songNum: 16, songTitle: "Talk to Me Dorothy", librettoPg: "131-139", characters: "Max, Ensemble" },
+            { act: 2, scene: 4, scriptPg: "62-66", description: "General Hospital - Stage", songNum: 17, songTitle: "Whatcha Do (Reprise 2)", librettoPg: "140-151", characters: "Ron, Dorothy, Julie" },
+            { act: 2, scene: 5, scriptPg: "67-73", description: "Restaurant / Julie's Apartment", songNum: null, songTitle: null, librettoPg: null, characters: "Julie, Dorothy, Michael" },
+            { act: 2, scene: 5, scriptPg: "67-73", description: "Restaurant", songNum: 18, songTitle: "Jeff Sums It Up", librettoPg: "152-158", characters: "Jeff" },
+            { act: 2, scene: 6, scriptPg: "74-79", description: "Julie's Dressing Room / M&J Apartment", songNum: 19, songTitle: "Gone, Gone, Gone (Reprise)", librettoPg: "159-166", characters: "Sandy, Michael, Jeff, Julie" },
+            { act: 2, scene: 7, scriptPg: "80-83", description: "Costume Shop", songNum: null, songTitle: null, librettoPg: null, characters: "Dorothy, Ensemble" },
+            { act: 2, scene: 8, scriptPg: "84-90", description: "General Hospital - Live Broadcast", songNum: 20, songTitle: "The Most Important Night of My Life", librettoPg: "167-185", characters: "Full Cast" },
+            { act: 2, scene: 9, scriptPg: "91-95", description: "Julie's Apartment", songNum: null, songTitle: null, librettoPg: null, characters: "Michael, Julie" },
+            { act: 2, scene: 9, scriptPg: "91-95", description: "Small Park", songNum: 21, songTitle: "Arrivederci!", librettoPg: "186-198", characters: "Dorothy, Ron, Max, Ensemble" },
+            { act: 2, scene: 10, scriptPg: "96-99", description: "Stage", songNum: 22, songTitle: "Unstoppable (Finale)", librettoPg: "199-210", characters: "Michael, Julie, Full Cast" },
+            { act: 2, scene: 10, scriptPg: "96-99", description: "Bows", songNum: 23, songTitle: "Bows / Thank You", librettoPg: "211-215", characters: "Full Cast" }
+        ];
+
+        let currentFilter = 'all';
+        let currentAct = 'all';
+        let searchQuery = '';
+
+        function renderCards() {
+            const container = document.getElementById('results');
+            let filtered = showData;
+
+            // Filter by act
+            if (currentAct !== 'all') {
+                filtered = filtered.filter(item => item.act === parseInt(currentAct));
+            }
+
+            // Filter by type
+            if (currentFilter === 'songs') {
+                filtered = filtered.filter(item => item.songNum !== null);
+            } else if (currentFilter === 'scenes') {
+                // Show unique scenes only
+                const seen = new Set();
+                filtered = filtered.filter(item => {
+                    const key = `${item.act}-${item.scene}`;
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                });
+            }
+
+            // Search filter
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                filtered = filtered.filter(item => {
+                    return (
+                        (item.songTitle && item.songTitle.toLowerCase().includes(q)) ||
+                        (item.description && item.description.toLowerCase().includes(q)) ||
+                        (item.characters && item.characters.toLowerCase().includes(q)) ||
+                        (item.songNum && item.songNum.toString() === q) ||
+                        (item.scriptPg && item.scriptPg.includes(q)) ||
+                        (item.librettoPg && item.librettoPg.includes(q)) ||
+                        (`scene ${item.scene}`.includes(q)) ||
+                        (`act ${item.act}`.includes(q))
+                    );
+                });
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <div class="icon">🔍</div>
+                        <p>No results found.<br>Try a different search.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const countText = `<div class="result-count">${filtered.length} result${filtered.length !== 1 ? 's' : ''}</div>`;
+
+            const cards = filtered.map(item => {
+                const isAct2 = item.act === 2;
+                const hasSong = item.songNum !== null;
+
+                return `
+                    <div class="card ${currentFilter === 'songs' ? 'song-only' : ''}">
+                        <div class="card-header ${isAct2 ? 'act2' : ''}">
+                            <div class="act-scene">
+                                <span class="badge act ${isAct2 ? 'act2' : ''}">ACT ${item.act}</span>
+                                <span class="badge scene">Scene ${item.scene}</span>
+                            </div>
+                            ${hasSong ? `<span class="song-num">Song #${item.songNum}</span>` : ''}
+                        </div>
+                        <div class="card-body">
+                            <div class="description">${item.description}</div>
+                            ${hasSong ? `<div class="song-title">"${item.songTitle}"</div>` : '<div class="song-title" style="color: var(--gray); font-style: italic;">Scene (No Song)</div>'}
+                            <div class="page-numbers">
+                                <div class="page-box script">
+                                    <div class="page-label">Script Page</div>
+                                    <div class="page-num">${item.scriptPg || '—'}</div>
+                                </div>
+                                <div class="page-box libretto">
+                                    <div class="page-label">Libretto Page</div>
+                                    <div class="page-num">${item.librettoPg || '—'}</div>
+                                </div>
+                            </div>
+                            <div class="characters"><strong>Characters:</strong> ${item.characters}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = countText + cards;
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            renderCards();
+        });
+
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.filter;
+                renderCards();
+            });
+        });
+
+        document.querySelectorAll('.act-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.act-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentAct = btn.dataset.act;
+                renderCards();
+            });
+        });
+
+        // Scroll to top button
+        const scrollBtn = document.getElementById('scrollTop');
+        window.addEventListener('scroll', () => {
+            scrollBtn.style.display = window.scrollY > 200 ? 'flex' : 'none';
+        });
+        scrollBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Initial render
+        renderCards();
+    </script>
+</body>
+</html>
