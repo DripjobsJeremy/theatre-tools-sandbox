@@ -172,13 +172,15 @@
             opacity: 0.6;
         }
 
-        /* Character filter */
-        .character-filter {
+        /* Dropdown filters */
+        .dropdown-filters {
+            display: flex;
+            gap: 8px;
             margin-top: 10px;
         }
 
-        .character-select {
-            width: 100%;
+        .filter-select {
+            flex: 1;
             padding: 10px 12px;
             border: 2px solid var(--input-border);
             border-radius: 10px;
@@ -186,6 +188,11 @@
             background: var(--input-bg);
             color: var(--text);
             cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23757575' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
         }
 
         .filter-tabs {
@@ -215,40 +222,6 @@
         .filter-tab:not(.active) {
             background: var(--gray-light);
             color: var(--text-muted);
-        }
-
-        /* Quick song buttons */
-        .quick-songs {
-            display: flex;
-            gap: 6px;
-            padding: 10px 16px;
-            overflow-x: auto;
-            background: var(--gray-light);
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .quick-songs::-webkit-scrollbar {
-            display: none;
-        }
-
-        .song-btn {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            white-space: nowrap;
-            background: var(--card-bg);
-            color: var(--pink);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: all 0.2s;
-        }
-
-        .song-btn:active {
-            transform: scale(0.95);
-            background: var(--pink);
-            color: white;
         }
 
         .act-selector {
@@ -528,9 +501,12 @@
             <input type="text" class="search-input" id="searchInput" placeholder="Search song, scene, or page #...">
         </div>
         <div class="recent-searches" id="recentSearches"></div>
-        <div class="character-filter">
-            <select class="character-select" id="characterSelect">
-                <option value="">All Characters (My Scenes)</option>
+        <div class="dropdown-filters">
+            <select class="filter-select" id="characterSelect" title="Filter by character">
+                <option value="">All Characters</option>
+            </select>
+            <select class="filter-select" id="songSelect" title="Filter by song">
+                <option value="">All Songs</option>
             </select>
         </div>
         <div class="filter-tabs">
@@ -539,8 +515,6 @@
             <button class="filter-tab" data-filter="scenes">Scenes Only</button>
         </div>
     </div>
-
-    <div class="quick-songs" id="quickSongs"></div>
 
     <div class="act-selector">
         <button class="act-btn all active" data-act="all">All</button>
@@ -604,6 +578,7 @@
         let currentFilter = 'all';
         let currentAct = 'all';
         let currentCharacter = '';
+        let currentSong = '';
         let searchQuery = '';
         let recentSearches = JSON.parse(localStorage.getItem('tootsie-recent') || '[]');
         let isDark = localStorage.getItem('tootsie-dark') === 'true';
@@ -637,21 +612,34 @@
             getUniqueCharacters().forEach(char => {
                 const opt = document.createElement('option');
                 opt.value = char;
-                opt.textContent = `I play ${char}`;
+                opt.textContent = char;
                 if (char === savedChar) opt.selected = true;
                 select.appendChild(opt);
             });
             currentCharacter = savedChar;
         }
 
-        // Populate quick song buttons
-        function initQuickSongs() {
-            const container = document.getElementById('quickSongs');
-            const songs = showData.filter(d => d.songNum).map(d => d.songNum);
-            const uniqueSongs = [...new Set(songs)];
-            container.innerHTML = uniqueSongs.map(s =>
-                `<button class="song-btn" data-song="${s}">${s}</button>`
-            ).join('');
+        // Populate song dropdown
+        function initSongSelect() {
+            const select = document.getElementById('songSelect');
+            const savedSong = localStorage.getItem('tootsie-song') || '';
+            const songs = showData.filter(d => d.songNum).map(d => ({ num: d.songNum, title: d.songTitle }));
+            const uniqueSongs = [];
+            const seen = new Set();
+            songs.forEach(s => {
+                if (!seen.has(s.num)) {
+                    seen.add(s.num);
+                    uniqueSongs.push(s);
+                }
+            });
+            uniqueSongs.forEach(song => {
+                const opt = document.createElement('option');
+                opt.value = song.num;
+                opt.textContent = `${song.num} - ${song.title}`;
+                if (song.num === savedSong) opt.selected = true;
+                select.appendChild(opt);
+            });
+            currentSong = savedSong;
         }
 
         // Render recent searches
@@ -705,6 +693,11 @@
                            chars.includes('cast') ||
                            chars.includes('ensemble');
                 });
+            }
+
+            // Filter by song
+            if (currentSong) {
+                filtered = filtered.filter(item => item.songNum === currentSong);
             }
 
             // Filter by type
@@ -825,14 +818,10 @@
             renderCards();
         });
 
-        document.getElementById('quickSongs').addEventListener('click', (e) => {
-            if (e.target.classList.contains('song-btn')) {
-                const song = e.target.dataset.song;
-                document.getElementById('searchInput').value = song;
-                searchQuery = song;
-                renderCards();
-                addRecentSearch(song);
-            }
+        document.getElementById('songSelect').addEventListener('change', (e) => {
+            currentSong = e.target.value;
+            localStorage.setItem('tootsie-song', currentSong);
+            renderCards();
         });
 
         document.querySelectorAll('.filter-tab').forEach(tab => {
@@ -879,7 +868,7 @@
 
         // Initialize
         initCharacterSelect();
-        initQuickSongs();
+        initSongSelect();
         renderRecentSearches();
         renderCards();
 
