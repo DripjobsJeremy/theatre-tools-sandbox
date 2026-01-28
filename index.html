@@ -177,6 +177,12 @@
             display: flex;
             gap: 8px;
             margin-top: 10px;
+            flex-direction: column;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 8px;
         }
 
         .filter-select {
@@ -193,6 +199,139 @@
             background-repeat: no-repeat;
             background-position: right 12px center;
             padding-right: 32px;
+        }
+
+        /* Multi-select character filter */
+        .multi-select-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .multi-select-btn {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--input-bg);
+            color: var(--text);
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .multi-select-btn::after {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23757575' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-size: contain;
+            flex-shrink: 0;
+        }
+
+        .multi-select-btn.open::after {
+            transform: rotate(180deg);
+        }
+
+        .multi-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            margin-top: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .multi-select-dropdown.open {
+            display: block;
+        }
+
+        .multi-select-option {
+            padding: 10px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .multi-select-option:last-child {
+            border-bottom: none;
+        }
+
+        .multi-select-option:hover {
+            background: var(--gray-light);
+        }
+
+        .multi-select-option.selected {
+            background: var(--pink-light);
+            color: var(--pink);
+        }
+
+        .multi-select-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--gray);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .multi-select-option.selected .multi-select-checkbox {
+            background: var(--pink);
+            border-color: var(--pink);
+        }
+
+        .multi-select-option.selected .multi-select-checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Selected character chips */
+        .selected-chars {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .selected-chars:empty {
+            display: none;
+        }
+
+        .char-chip {
+            padding: 4px 8px;
+            background: var(--pink);
+            color: white;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .char-chip .remove {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        .char-chip:hover .remove {
+            opacity: 1;
         }
 
         .filter-tabs {
@@ -502,12 +641,18 @@
         </div>
         <div class="recent-searches" id="recentSearches"></div>
         <div class="dropdown-filters">
-            <select class="filter-select" id="characterSelect" title="Filter by character">
-                <option value="">All Characters</option>
-            </select>
-            <select class="filter-select" id="songSelect" title="Filter by song">
-                <option value="">All Songs</option>
-            </select>
+            <div class="filter-row">
+                <div class="multi-select-wrapper">
+                    <button class="multi-select-btn" id="characterBtn" type="button">
+                        <span>All Characters</span>
+                    </button>
+                    <div class="multi-select-dropdown" id="characterDropdown"></div>
+                </div>
+                <select class="filter-select" id="songSelect" title="Filter by song">
+                    <option value="">All Songs</option>
+                </select>
+            </div>
+            <div class="selected-chars" id="selectedChars"></div>
         </div>
         <div class="filter-tabs">
             <button class="filter-tab active" data-filter="all">All</button>
@@ -577,7 +722,7 @@
         // State
         let currentFilter = 'all';
         let currentAct = 'all';
-        let currentCharacter = '';
+        let selectedCharacters = JSON.parse(localStorage.getItem('tootsie-characters') || '[]');
         let currentSong = '';
         let searchQuery = '';
         let recentSearches = JSON.parse(localStorage.getItem('tootsie-recent') || '[]');
@@ -605,18 +750,65 @@
             return Array.from(chars).sort();
         }
 
-        // Populate character dropdown
+        // Populate character multi-select dropdown
         function initCharacterSelect() {
-            const select = document.getElementById('characterSelect');
-            const savedChar = localStorage.getItem('tootsie-character') || '';
-            getUniqueCharacters().forEach(char => {
-                const opt = document.createElement('option');
-                opt.value = char;
-                opt.textContent = char;
-                if (char === savedChar) opt.selected = true;
-                select.appendChild(opt);
-            });
-            currentCharacter = savedChar;
+            const dropdown = document.getElementById('characterDropdown');
+            const characters = getUniqueCharacters();
+
+            dropdown.innerHTML = characters.map(char => `
+                <div class="multi-select-option ${selectedCharacters.includes(char) ? 'selected' : ''}" data-char="${char}">
+                    <div class="multi-select-checkbox"></div>
+                    <span>${char}</span>
+                </div>
+            `).join('');
+
+            updateCharacterButton();
+            renderSelectedChips();
+        }
+
+        // Update the character button text
+        function updateCharacterButton() {
+            const btn = document.getElementById('characterBtn');
+            const span = btn.querySelector('span');
+            if (selectedCharacters.length === 0) {
+                span.textContent = 'All Characters';
+            } else if (selectedCharacters.length === 1) {
+                span.textContent = selectedCharacters[0];
+            } else {
+                span.textContent = `${selectedCharacters.length} Characters`;
+            }
+        }
+
+        // Render selected character chips
+        function renderSelectedChips() {
+            const container = document.getElementById('selectedChars');
+            container.innerHTML = selectedCharacters.map(char => `
+                <span class="char-chip" data-char="${char}">
+                    ${char}
+                    <span class="remove">×</span>
+                </span>
+            `).join('');
+        }
+
+        // Toggle character selection
+        function toggleCharacter(char) {
+            const idx = selectedCharacters.indexOf(char);
+            if (idx === -1) {
+                selectedCharacters.push(char);
+            } else {
+                selectedCharacters.splice(idx, 1);
+            }
+            localStorage.setItem('tootsie-characters', JSON.stringify(selectedCharacters));
+
+            // Update dropdown option styling
+            const option = document.querySelector(`.multi-select-option[data-char="${char}"]`);
+            if (option) {
+                option.classList.toggle('selected', selectedCharacters.includes(char));
+            }
+
+            updateCharacterButton();
+            renderSelectedChips();
+            renderCards();
         }
 
         // Populate song dropdown
@@ -685,13 +877,16 @@
                 filtered = filtered.filter(item => item.act === parseInt(currentAct));
             }
 
-            // Filter by character
-            if (currentCharacter) {
+            // Filter by characters (AND logic - scene must contain ALL selected characters)
+            if (selectedCharacters.length > 0) {
                 filtered = filtered.filter(item => {
-                    const chars = item.characters.toLowerCase();
-                    return chars.includes(currentCharacter.toLowerCase()) ||
-                           chars.includes('cast') ||
-                           chars.includes('ensemble');
+                    const sceneChars = item.characters.toLowerCase();
+                    // Check if ALL selected characters are in this scene
+                    return selectedCharacters.every(char => {
+                        const charLower = char.toLowerCase();
+                        return sceneChars.includes(charLower) ||
+                               sceneChars.includes('cast');
+                    });
                 });
             }
 
@@ -744,7 +939,8 @@
                 return;
             }
 
-            const countText = `<div class="result-count">${filtered.length} result${filtered.length !== 1 ? 's' : ''}${currentCharacter ? ` for ${currentCharacter}` : ''}</div>`;
+            const charText = selectedCharacters.length > 0 ? ` with ${selectedCharacters.join(' + ')}` : '';
+            const countText = `<div class="result-count">${filtered.length} result${filtered.length !== 1 ? 's' : ''}${charText}</div>`;
 
             const cards = filtered.map(item => {
                 const isAct2 = item.act === 2;
@@ -812,10 +1008,39 @@
             }
         });
 
-        document.getElementById('characterSelect').addEventListener('change', (e) => {
-            currentCharacter = e.target.value;
-            localStorage.setItem('tootsie-character', currentCharacter);
-            renderCards();
+        // Character multi-select toggle
+        document.getElementById('characterBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const btn = e.currentTarget;
+            const dropdown = document.getElementById('characterDropdown');
+            btn.classList.toggle('open');
+            dropdown.classList.toggle('open');
+        });
+
+        // Character option selection
+        document.getElementById('characterDropdown').addEventListener('click', (e) => {
+            const option = e.target.closest('.multi-select-option');
+            if (option) {
+                e.stopPropagation();
+                toggleCharacter(option.dataset.char);
+            }
+        });
+
+        // Remove character chip
+        document.getElementById('selectedChars').addEventListener('click', (e) => {
+            const chip = e.target.closest('.char-chip');
+            if (chip) {
+                toggleCharacter(chip.dataset.char);
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const wrapper = document.querySelector('.multi-select-wrapper');
+            if (!wrapper.contains(e.target)) {
+                document.getElementById('characterBtn').classList.remove('open');
+                document.getElementById('characterDropdown').classList.remove('open');
+            }
         });
 
         document.getElementById('songSelect').addEventListener('change', (e) => {
