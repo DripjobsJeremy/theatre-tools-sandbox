@@ -632,6 +632,199 @@
                 margin: 0 auto;
             }
         }
+
+        /* Main navigation tabs */
+        .main-nav {
+            display: flex;
+            background: var(--card-bg);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .main-nav-tab {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .main-nav-tab.active {
+            color: var(--pink);
+        }
+
+        .main-nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--pink);
+        }
+
+        /* View containers */
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* Schedule styles */
+        .schedule-container {
+            padding: 12px 16px;
+            padding-bottom: 80px;
+        }
+
+        .schedule-header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .schedule-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--text);
+        }
+
+        .schedule-header p {
+            margin: 4px 0 0;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .day-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .day-header {
+            padding: 14px 16px;
+            background: linear-gradient(90deg, var(--pink), var(--blue));
+            color: white;
+        }
+
+        .day-header .day-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .day-header .day-date {
+            font-size: 13px;
+            opacity: 0.9;
+            margin: 2px 0 0;
+        }
+
+        .day-header .off-book-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.25);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .day-body {
+            padding: 12px 16px;
+        }
+
+        .time-block {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .time-block:last-child {
+            border-bottom: none;
+        }
+
+        .time-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .time-badge {
+            background: var(--gold);
+            color: #333;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .called-people {
+            font-size: 13px;
+            color: var(--text);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .rehearsal-items {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .rehearsal-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--gray-light);
+            border-radius: 10px;
+        }
+
+        .rehearsal-item .song-badge {
+            background: var(--pink);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .rehearsal-item .item-title {
+            font-size: 14px;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .rehearsal-item.scene-item .song-badge {
+            background: var(--blue);
+        }
+
+        .rehearsal-item.run-item {
+            background: var(--pink-light);
+        }
+
+        .rehearsal-item.run-item .song-badge {
+            background: var(--pink);
+        }
+
+        .schedule-note {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -644,6 +837,13 @@
         <button class="dark-toggle" id="darkToggle" title="Toggle dark mode">🌙</button>
     </div>
 
+    <nav class="main-nav">
+        <button class="main-nav-tab active" data-view="pagefinder">Page Finder</button>
+        <button class="main-nav-tab" data-view="schedule">Schedule</button>
+    </nav>
+
+    <!-- Page Finder View -->
+    <div class="view active" id="pagefinderView">
     <div class="search-container">
         <div class="search-box">
             <input type="text" class="search-input" id="searchInput" placeholder="Search song, scene, or page #...">
@@ -677,6 +877,21 @@
     </div>
 
     <div class="results" id="results"></div>
+    </div><!-- End Page Finder View -->
+
+    <!-- Schedule View -->
+    <div class="view" id="scheduleView">
+        <div class="schedule-container">
+            <div class="schedule-header">
+                <h2>Rehearsal Schedule</h2>
+                <p>February 2025</p>
+            </div>
+            <div id="scheduleContent"></div>
+            <div class="schedule-note">
+                Schedule updated by stage management. Check for changes!
+            </div>
+        </div>
+    </div><!-- End Schedule View -->
 
     <div class="copied-toast" id="copiedToast">Copied!</div>
 
@@ -841,6 +1056,146 @@
                 select.appendChild(opt);
             });
             currentSong = savedSong;
+        }
+
+        // Rehearsal Schedule Data (Admin updateable)
+        const scheduleData = [
+            {
+                day: "Sunday",
+                date: "February 2",
+                offBook: true,
+                blocks: [
+                    {
+                        time: "6:30 PM",
+                        called: "Julie, Meghan, Leelee",
+                        items: [
+                            { type: "song", num: "#14", title: "Gone Gone Gone" }
+                        ]
+                    },
+                    {
+                        time: "7:00 PM",
+                        called: "All but SJS",
+                        items: [
+                            { type: "song", num: "#7", title: "I'm Alive" },
+                            { type: "scene", num: "Act 1 Sc 9", title: "All I Like What She's Doing" }
+                        ]
+                    },
+                    {
+                        time: "7:30 PM",
+                        called: "Add SJS",
+                        items: [
+                            { type: "song", num: "#12", title: "Unstoppable" },
+                            { type: "song", num: "#18", title: "Most Important Night" },
+                            { type: "song", num: "#2", title: "Opening" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Monday",
+                date: "February 3",
+                offBook: true,
+                blocks: [
+                    {
+                        time: "6:30 PM",
+                        called: "All",
+                        items: [
+                            { type: "song", num: "#2", title: "Opening" },
+                            { type: "song", num: "#7", title: "I'm Alive" },
+                            { type: "song", num: "#12", title: "Unstoppable" },
+                            { type: "run", num: "Run", title: "Act 1" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Tuesday",
+                date: "February 4",
+                offBook: true,
+                blocks: [
+                    {
+                        time: "6:30 PM",
+                        called: "All",
+                        items: [
+                            { type: "song", num: "#18", title: "The Most Important Night" },
+                            { type: "run", num: "Run", title: "Act 1" },
+                            { type: "song", num: "#20", title: "Arrivederci" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Wednesday",
+                date: "February 5",
+                offBook: true,
+                blocks: [
+                    {
+                        time: "6:30 PM",
+                        called: "All",
+                        items: [
+                            { type: "song", num: "#18", title: "Most Important Night" },
+                            { type: "run", num: "Run", title: "Act 2 (hopefully twice)" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Thursday",
+                date: "February 6",
+                offBook: false,
+                blocks: [
+                    {
+                        time: "6:30 PM",
+                        called: "All",
+                        items: [
+                            { type: "scene", num: "Notes", title: "Clean-up" }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // Render schedule
+        function renderSchedule() {
+            const container = document.getElementById('scheduleContent');
+            container.innerHTML = scheduleData.map(day => `
+                <div class="day-card">
+                    <div class="day-header">
+                        <div class="day-name">${day.day}</div>
+                        <div class="day-date">${day.date}</div>
+                        ${day.offBook ? '<div class="off-book-badge">Off Book</div>' : ''}
+                    </div>
+                    <div class="day-body">
+                        ${day.blocks.map(block => `
+                            <div class="time-block">
+                                <div class="time-row">
+                                    <span class="time-badge">${block.time}</span>
+                                    <span class="called-people">${block.called}</span>
+                                </div>
+                                <div class="rehearsal-items">
+                                    ${block.items.map(item => `
+                                        <div class="rehearsal-item ${item.type === 'run' ? 'run-item' : ''} ${item.type === 'scene' ? 'scene-item' : ''}">
+                                            <span class="song-badge">${item.num}</span>
+                                            <span class="item-title">${item.title}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Tab switching
+        function switchView(viewName) {
+            document.querySelectorAll('.main-nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+
+            document.querySelector(`.main-nav-tab[data-view="${viewName}"]`).classList.add('active');
+            document.getElementById(`${viewName}View`).classList.add('active');
+
+            localStorage.setItem('tootsie-view', viewName);
         }
 
         // Render recent searches
@@ -1100,11 +1455,25 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
+        // Main nav tab switching
+        document.querySelectorAll('.main-nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchView(tab.dataset.view);
+            });
+        });
+
         // Initialize
         initCharacterSelect();
         initSongSelect();
         renderRecentSearches();
         renderCards();
+        renderSchedule();
+
+        // Restore last view
+        const savedView = localStorage.getItem('tootsie-view');
+        if (savedView) {
+            switchView(savedView);
+        }
 
         // Unregister service worker to fix caching issues
         if ('serviceWorker' in navigator) {
