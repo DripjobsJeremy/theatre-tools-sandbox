@@ -825,6 +825,257 @@
             font-size: 12px;
             font-style: italic;
         }
+
+        /* Dashboard styles */
+        .dashboard-container {
+            padding: 20px 16px;
+            padding-bottom: 80px;
+        }
+
+        .dashboard-welcome {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .dashboard-welcome h2 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--text);
+        }
+
+        .dashboard-welcome p {
+            margin: 8px 0 0;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .dashboard-btn {
+            background: var(--card-bg);
+            border: none;
+            border-radius: 20px;
+            padding: 24px 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dashboard-btn:active {
+            transform: scale(0.96);
+        }
+
+        .dashboard-btn .icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .dashboard-btn.pagefinder .icon {
+            background: linear-gradient(135deg, var(--blue), var(--pink));
+        }
+
+        .dashboard-btn.schedule .icon {
+            background: linear-gradient(135deg, var(--pink), var(--gold));
+        }
+
+        .dashboard-btn.contacts .icon {
+            background: linear-gradient(135deg, var(--green), var(--blue));
+        }
+
+        .dashboard-btn .label {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .dashboard-btn .sublabel {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: -8px;
+        }
+
+        /* Full-width button for contacts */
+        .dashboard-grid .dashboard-btn.contacts {
+            grid-column: 1 / -1;
+        }
+
+        /* Quick stats on dashboard */
+        .quick-stats {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .stat-card .stat-num {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--pink);
+        }
+
+        .stat-card .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Contact list styles */
+        .contacts-container {
+            padding: 12px 16px;
+            padding-bottom: 80px;
+        }
+
+        .contacts-header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .contacts-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--text);
+        }
+
+        .contacts-header p {
+            margin: 4px 0 0;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .contact-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .contact-header {
+            padding: 14px 16px;
+            background: linear-gradient(90deg, var(--blue-light), var(--pink-light));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .contact-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .contact-name:hover {
+            color: var(--pink);
+        }
+
+        .contact-character {
+            background: var(--pink);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .contact-body {
+            padding: 12px 16px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .contact-action {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            background: var(--gray-light);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .contact-action:hover {
+            background: var(--pink-light);
+        }
+
+        .contact-action:active {
+            transform: scale(0.96);
+        }
+
+        .contact-action .action-icon {
+            font-size: 18px;
+        }
+
+        .contact-action.email {
+            background: var(--blue-light);
+        }
+
+        .contact-action.phone {
+            background: var(--green);
+            background: rgba(76, 175, 80, 0.15);
+        }
+
+        /* Schedule filters */
+        .schedule-filters {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .schedule-filter-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .schedule-filter-row {
+                flex-direction: column;
+            }
+        }
+
+        .date-select, .schedule-char-select {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--input-bg);
+            color: var(--text);
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -838,12 +1089,55 @@
     </div>
 
     <nav class="main-nav">
-        <button class="main-nav-tab active" data-view="pagefinder">Page Finder</button>
+        <button class="main-nav-tab active" data-view="dashboard">Home</button>
+        <button class="main-nav-tab" data-view="pagefinder">Pages</button>
         <button class="main-nav-tab" data-view="schedule">Schedule</button>
+        <button class="main-nav-tab" data-view="contacts">Cast</button>
     </nav>
 
+    <!-- Dashboard View -->
+    <div class="view active" id="dashboardView">
+        <div class="dashboard-container">
+            <div class="dashboard-welcome">
+                <h2>Welcome to TOOTSIE</h2>
+                <p>Quick access to everything you need</p>
+            </div>
+            <div class="dashboard-grid">
+                <button type="button" class="dashboard-btn pagefinder" onclick="switchView('pagefinder')">
+                    <div class="icon">📖</div>
+                    <div class="label">Page Finder</div>
+                    <div class="sublabel">Script & Libretto</div>
+                </button>
+                <button type="button" class="dashboard-btn schedule" onclick="switchView('schedule')">
+                    <div class="icon">📅</div>
+                    <div class="label">Schedule</div>
+                    <div class="sublabel">Rehearsals</div>
+                </button>
+                <button type="button" class="dashboard-btn contacts" onclick="switchView('contacts')">
+                    <div class="icon">👥</div>
+                    <div class="label">Cast Contact List</div>
+                    <div class="sublabel">Tap name to see their scenes</div>
+                </button>
+            </div>
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-num">38</div>
+                    <div class="stat-label">Scenes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num">24</div>
+                    <div class="stat-label">Songs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num" id="castCount">17</div>
+                    <div class="stat-label">Cast</div>
+                </div>
+            </div>
+        </div>
+    </div><!-- End Dashboard View -->
+
     <!-- Page Finder View -->
-    <div class="view active" id="pagefinderView">
+    <div class="view" id="pagefinderView">
     <div class="search-container">
         <div class="search-box">
             <input type="text" class="search-input" id="searchInput" placeholder="Search song, scene, or page #...">
@@ -886,12 +1180,33 @@
                 <h2>Rehearsal Schedule</h2>
                 <p>February 2025</p>
             </div>
+            <div class="schedule-filters">
+                <div class="schedule-filter-row">
+                    <select class="date-select" id="scheduleDateFilter">
+                        <option value="">All Dates</option>
+                    </select>
+                    <select class="schedule-char-select" id="scheduleCharFilter">
+                        <option value="">All Cast</option>
+                    </select>
+                </div>
+            </div>
             <div id="scheduleContent"></div>
             <div class="schedule-note">
                 Schedule updated by stage management. Check for changes!
             </div>
         </div>
     </div><!-- End Schedule View -->
+
+    <!-- Contacts View -->
+    <div class="view" id="contactsView">
+        <div class="contacts-container">
+            <div class="contacts-header">
+                <h2>Cast Contact List</h2>
+                <p>Tap name to see their scenes & songs</p>
+            </div>
+            <div id="contactsList"></div>
+        </div>
+    </div><!-- End Contacts View -->
 
     <div class="copied-toast" id="copiedToast">Copied!</div>
 
@@ -1155,10 +1470,129 @@
             }
         ];
 
-        // Render schedule
+        // Cast Contact Data (from CSV)
+        const castData = [
+            { first: "Tiffany", last: "Adams", email: "adamstiff00@gmail.com", phone: "(352)667-9413", character: "Sandy Lester" },
+            { first: "Linda", last: "Bega", email: "linda@landmarkinverness.com", phone: "(352)212-2161", character: "Stage Manager" },
+            { first: "Jon", last: "Bolin", email: "jonathanbolin27@gmail.com", phone: "(352)464-0131", character: "Ensemble" },
+            { first: "Nathan", last: "Browne", email: "nvbrowne@gmail.com", phone: "(352)400-8979", character: "Max Van Horn / Craig" },
+            { first: "Howard", last: "Christ", email: "hnchrist3@gmail.com", phone: "(352)201-1370", character: "Stan" },
+            { first: "LeeLee", last: "Cruz", email: "ohmygoddess15@aol.com", phone: "(352)710-6216", character: "Ensemble" },
+            { first: "Emma", last: "Godman", email: "emmagodman123@gmail.com", phone: "(304)616-0001", character: "Ron Carlisle" },
+            { first: "Katherine", last: "Godman", email: "katgodman23@gmail.com", phone: "(304)839-9706", character: "Julie Nichols / Juliet" },
+            { first: "Jean", last: "Hamilton", email: "hayes.jean@gmail.com", phone: "(352)442-5885", character: "Rita Marshall" },
+            { first: "Jeremy", last: "Harrison", email: "jwharrison77@gmail.com", phone: "(727)250-8869", character: "Michael Dorsey / Dorothy Michaels" },
+            { first: "Elissa", last: "Kane", email: "elissakane0128@gmail.com", phone: "(352)613-7505", character: "Susie" },
+            { first: "Megan", last: "Provost", email: "chorusgirl8@yahoo.com", phone: "(352)560-9706", character: "Ensemble" },
+            { first: "Maitias", last: "Rogers", email: "extraordinary.t@gmail.com", phone: "(352)364-3587", character: "Ensemble" },
+            { first: "Leland", last: "Shipp", email: "Leland@lelandshipp.com", phone: "(352)710-6216", character: "Ensemble" },
+            { first: "Sally", last: "Smith-Adams", email: "sally_smith_adams@hotmail.com", phone: "(352)220-2150", character: "Musical Director" },
+            { first: "Eric", last: "Tremante", email: "etremante@hotmail.com", phone: "(352)228-1975", character: "Jeff Slater" },
+            { first: "Sue", last: "Whitney", email: "slwhitney54@gmail.com", phone: "(315)955-5758", character: "Director" }
+        ];
+
+        // Schedule filter state
+        let scheduleFilterDate = '';
+        let scheduleFilterChar = '';
+
+        // Render contacts list
+        function renderContacts() {
+            const container = document.getElementById('contactsList');
+            container.innerHTML = castData.map(person => {
+                const chars = person.character.split('/').map(c => c.trim());
+                return `
+                    <div class="contact-card">
+                        <div class="contact-header">
+                            <a class="contact-name" href="#" onclick="viewCharacterScenes('${chars[0]}'); return false;">
+                                ${person.first} ${person.last}
+                            </a>
+                            <span class="contact-character">${person.character}</span>
+                        </div>
+                        <div class="contact-body">
+                            <a class="contact-action email" href="mailto:${person.email}">
+                                <span class="action-icon">✉️</span>
+                                <span>Email</span>
+                            </a>
+                            <a class="contact-action phone" href="tel:${person.phone.replace(/[^\d+]/g, '')}">
+                                <span class="action-icon">📞</span>
+                                <span>${person.phone}</span>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // View character's scenes in Page Finder
+        function viewCharacterScenes(character) {
+            // Map actor character names to showData character names
+            const charMap = {
+                'Sandy Lester': 'Sandy',
+                'Max Van Horn': 'Max',
+                'Ron Carlisle': 'Ron',
+                'Julie Nichols': 'Julie',
+                'Rita Marshall': 'Rita',
+                'Michael Dorsey': 'Michael',
+                'Dorothy Michaels': 'Dorothy',
+                'Jeff Slater': 'Jeff',
+                'Susie': 'Susie',
+                'Stan': 'Stan'
+            };
+
+            const mappedChar = charMap[character] || character;
+
+            // Clear existing selections and set this character
+            selectedCharacters = [mappedChar];
+            localStorage.setItem('tootsie-characters', JSON.stringify(selectedCharacters));
+
+            // Update UI
+            initCharacterSelect();
+            renderCards();
+
+            // Switch to Page Finder view
+            switchView('pagefinder');
+        }
+
+        // Initialize schedule filters
+        function initScheduleFilters() {
+            const dateSelect = document.getElementById('scheduleDateFilter');
+            const charSelect = document.getElementById('scheduleCharFilter');
+
+            // Populate date options
+            scheduleData.forEach(day => {
+                const opt = document.createElement('option');
+                opt.value = day.date;
+                opt.textContent = `${day.day}, ${day.date}`;
+                dateSelect.appendChild(opt);
+            });
+
+            // Populate character options from cast
+            castData.filter(p => !['Stage Manager', 'Musical Director', 'Director', 'Ensemble'].includes(p.character))
+                .forEach(person => {
+                    const opt = document.createElement('option');
+                    opt.value = person.first;
+                    opt.textContent = `${person.first} ${person.last}`;
+                    charSelect.appendChild(opt);
+                });
+        }
+
+        // Render schedule with filters
         function renderSchedule() {
             const container = document.getElementById('scheduleContent');
-            container.innerHTML = scheduleData.map(day => `
+
+            // Apply filters
+            let filteredSchedule = scheduleData;
+
+            if (scheduleFilterDate) {
+                filteredSchedule = filteredSchedule.filter(day => day.date === scheduleFilterDate);
+            }
+
+            if (filteredSchedule.length === 0) {
+                container.innerHTML = '<div class="no-results"><div class="icon">📅</div><p>No rehearsals match your filter.</p></div>';
+                return;
+            }
+
+            container.innerHTML = filteredSchedule.map(day => `
                 <div class="day-card">
                     <div class="day-header">
                         <div class="day-name">${day.day}</div>
@@ -1462,15 +1896,31 @@
             });
         });
 
+        // Schedule filter listeners
+        document.getElementById('scheduleDateFilter').addEventListener('change', (e) => {
+            scheduleFilterDate = e.target.value;
+            renderSchedule();
+        });
+
+        document.getElementById('scheduleCharFilter').addEventListener('change', (e) => {
+            scheduleFilterChar = e.target.value;
+            renderSchedule();
+        });
+
         // Initialize
         initCharacterSelect();
         initSongSelect();
+        initScheduleFilters();
         renderRecentSearches();
         renderCards();
         renderSchedule();
+        renderContacts();
 
-        // Restore last view
-        const savedView = localStorage.getItem('tootsie-view');
+        // Update cast count on dashboard
+        document.getElementById('castCount').textContent = castData.length;
+
+        // Restore last view (default to dashboard)
+        const savedView = localStorage.getItem('tootsie-view') || 'dashboard';
         if (savedView) {
             switchView(savedView);
         }
