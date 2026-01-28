@@ -182,7 +182,15 @@
 
         .filter-row {
             display: flex;
+            flex-direction: column;
             gap: 8px;
+        }
+
+        /* Side-by-side on larger screens */
+        @media (min-width: 400px) {
+            .filter-row {
+                flex-direction: row;
+            }
         }
 
         .filter-select {
