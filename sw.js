@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tootsie-page-finder-v2';
+const CACHE_NAME = 'tootsie-page-finder-v3';
 const ASSETS = [
   './',
   './index.html',
