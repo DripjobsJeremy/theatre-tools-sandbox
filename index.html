@@ -1215,6 +1215,30 @@
         .table-wrapper.hidden {
             display: none;
         }
+
+        /* Clear filters button */
+        .clear-filters-btn {
+            padding: 6px 14px;
+            border: 2px solid var(--gray);
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .clear-filters-btn:hover {
+            border-color: var(--pink);
+            color: var(--pink);
+            background: var(--pink-light);
+        }
+
+        .clear-filters-btn:active {
+            transform: scale(0.96);
+        }
     </style>
 </head>
 <body>
@@ -1300,6 +1324,7 @@
             <button class="filter-tab active" data-filter="all">All</button>
             <button class="filter-tab" data-filter="songs">Songs Only</button>
             <button class="filter-tab" data-filter="scenes">Scenes Only</button>
+            <button class="clear-filters-btn" id="clearPageFilters" type="button">Clear</button>
         </div>
     </div>
 
@@ -1327,6 +1352,7 @@
                     <select class="schedule-char-select" id="scheduleCharFilter">
                         <option value="">All Cast</option>
                     </select>
+                    <button class="clear-filters-btn" id="clearScheduleFilters" type="button">Clear</button>
                 </div>
             </div>
             <div id="scheduleContent"></div>
@@ -1885,6 +1911,45 @@
             }
         }
 
+        // Clear Page Finder filters
+        function clearPageFinderFilters() {
+            // Reset character selection
+            selectedCharacters = [];
+            localStorage.setItem('tootsie-characters', '[]');
+
+            // Reset song filter
+            currentSong = '';
+            localStorage.setItem('tootsie-song', '');
+            document.getElementById('songSelect').value = '';
+
+            // Reset search
+            searchQuery = '';
+            document.getElementById('searchInput').value = '';
+
+            // Reset act filter
+            currentAct = 'all';
+            document.querySelectorAll('.act-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.act-btn.all').classList.add('active');
+
+            // Reset type filter
+            currentFilter = 'all';
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('.filter-tab[data-filter="all"]').classList.add('active');
+
+            // Update UI
+            initCharacterSelect();
+            renderCards();
+        }
+
+        // Clear Schedule filters
+        function clearScheduleFilters() {
+            scheduleFilterDate = '';
+            scheduleFilterChar = '';
+            document.getElementById('scheduleDateFilter').value = '';
+            document.getElementById('scheduleCharFilter').value = '';
+            renderSchedule();
+        }
+
         // Render recent searches
         function renderRecentSearches() {
             const container = document.getElementById('recentSearches');
@@ -2183,6 +2248,10 @@
             scheduleFilterChar = e.target.value;
             renderSchedule();
         });
+
+        // Clear filters button listeners
+        document.getElementById('clearPageFilters').addEventListener('click', clearPageFinderFilters);
+        document.getElementById('clearScheduleFilters').addEventListener('click', clearScheduleFilters);
 
         // Initialize
         initCharacterSelect();
