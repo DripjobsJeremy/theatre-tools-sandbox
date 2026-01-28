@@ -1076,11 +1076,150 @@
             color: var(--text);
             cursor: pointer;
         }
+
+        /* Back button */
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn:active {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .back-btn.hidden {
+            visibility: hidden;
+        }
+
+        /* Contact view toggle */
+        .view-toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 4px;
+            background: var(--gray-light);
+            border-radius: 10px;
+            padding: 4px;
+        }
+
+        .view-toggle-btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .view-toggle-btn.active {
+            background: var(--card-bg);
+            color: var(--pink);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Contact list table view */
+        .contacts-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .contacts-table th {
+            background: var(--pink);
+            color: white;
+            padding: 12px 10px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .contacts-table th:hover {
+            background: var(--pink-light);
+            background: #d81b60;
+        }
+
+        .contacts-table th .sort-arrow {
+            margin-left: 4px;
+            opacity: 0.5;
+        }
+
+        .contacts-table th.sorted .sort-arrow {
+            opacity: 1;
+        }
+
+        .contacts-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .contacts-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .contacts-table tr:hover td {
+            background: var(--gray-light);
+        }
+
+        .contacts-table .name-cell {
+            font-weight: 600;
+            color: var(--pink);
+            cursor: pointer;
+        }
+
+        .contacts-table .name-cell:hover {
+            text-decoration: underline;
+        }
+
+        .contacts-table a {
+            color: var(--blue);
+            text-decoration: none;
+        }
+
+        .contacts-table a:hover {
+            text-decoration: underline;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+        }
+
+        /* Hide cards or table based on view */
+        .contacts-cards.hidden,
+        .table-wrapper.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <div style="width: 40px;"></div>
+        <button type="button" class="back-btn hidden" id="backBtn" title="Go back">←</button>
         <div class="header-title">
             <h1>TOOTSIE</h1>
             <p>Script & Libretto Page Finder</p>
@@ -1204,7 +1343,27 @@
                 <h2>Cast Contact List</h2>
                 <p>Tap name to see their scenes & songs</p>
             </div>
-            <div id="contactsList"></div>
+            <div class="view-toggle-row">
+                <div class="view-toggle">
+                    <button type="button" class="view-toggle-btn active" data-view="cards">Cards</button>
+                    <button type="button" class="view-toggle-btn" data-view="list">List</button>
+                </div>
+            </div>
+            <div class="contacts-cards" id="contactsList"></div>
+            <div class="table-wrapper hidden" id="contactsTable">
+                <table class="contacts-table">
+                    <thead>
+                        <tr>
+                            <th data-sort="first">First <span class="sort-arrow">↕</span></th>
+                            <th data-sort="last">Last <span class="sort-arrow">↕</span></th>
+                            <th data-sort="character">Character <span class="sort-arrow">↕</span></th>
+                            <th data-sort="email">Email <span class="sort-arrow">↕</span></th>
+                            <th data-sort="phone">Phone <span class="sort-arrow">↕</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="contactsTableBody"></tbody>
+                </table>
+            </div>
         </div>
     </div><!-- End Contacts View -->
 
@@ -1266,6 +1425,12 @@
         let searchQuery = '';
         let recentSearches = JSON.parse(localStorage.getItem('tootsie-recent') || '[]');
         let isDark = localStorage.getItem('tootsie-dark') === 'true';
+
+        // Navigation history for back button
+        let viewHistory = ['dashboard'];
+        let contactsViewMode = 'cards';
+        let contactsSortKey = 'first';
+        let contactsSortAsc = true;
 
         // Initialize dark mode
         if (isDark) {
@@ -1523,6 +1688,65 @@
             }).join('');
         }
 
+        // Render contacts table (list view)
+        function renderContactsTable() {
+            const tbody = document.getElementById('contactsTableBody');
+
+            // Sort data
+            const sorted = [...castData].sort((a, b) => {
+                let aVal = a[contactsSortKey].toLowerCase();
+                let bVal = b[contactsSortKey].toLowerCase();
+                if (aVal < bVal) return contactsSortAsc ? -1 : 1;
+                if (aVal > bVal) return contactsSortAsc ? 1 : -1;
+                return 0;
+            });
+
+            tbody.innerHTML = sorted.map(person => {
+                const chars = person.character.split('/').map(c => c.trim());
+                return `
+                    <tr>
+                        <td class="name-cell" onclick="viewCharacterScenes('${chars[0]}')">${person.first}</td>
+                        <td class="name-cell" onclick="viewCharacterScenes('${chars[0]}')">${person.last}</td>
+                        <td>${person.character}</td>
+                        <td><a href="mailto:${person.email}">${person.email}</a></td>
+                        <td><a href="tel:${person.phone.replace(/[^\d+]/g, '')}">${person.phone}</a></td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Update sort indicators
+            document.querySelectorAll('.contacts-table th').forEach(th => {
+                th.classList.remove('sorted');
+                const arrow = th.querySelector('.sort-arrow');
+                if (arrow) arrow.textContent = '↕';
+            });
+            const sortedTh = document.querySelector(`.contacts-table th[data-sort="${contactsSortKey}"]`);
+            if (sortedTh) {
+                sortedTh.classList.add('sorted');
+                sortedTh.querySelector('.sort-arrow').textContent = contactsSortAsc ? '↑' : '↓';
+            }
+        }
+
+        // Toggle contacts view mode
+        function setContactsViewMode(mode) {
+            contactsViewMode = mode;
+            const cardsContainer = document.getElementById('contactsList');
+            const tableContainer = document.getElementById('contactsTable');
+
+            document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === mode);
+            });
+
+            if (mode === 'cards') {
+                cardsContainer.classList.remove('hidden');
+                tableContainer.classList.add('hidden');
+            } else {
+                cardsContainer.classList.add('hidden');
+                tableContainer.classList.remove('hidden');
+                renderContactsTable();
+            }
+        }
+
         // View character's scenes in Page Finder
         function viewCharacterScenes(character) {
             // Map actor character names to showData character names
@@ -1621,15 +1845,44 @@
             `).join('');
         }
 
-        // Tab switching
-        function switchView(viewName) {
+        // Tab switching with history tracking
+        function switchView(viewName, addToHistory = true) {
             document.querySelectorAll('.main-nav-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
 
             document.querySelector(`.main-nav-tab[data-view="${viewName}"]`).classList.add('active');
             document.getElementById(`${viewName}View`).classList.add('active');
 
+            // Track navigation history
+            if (addToHistory && viewHistory[viewHistory.length - 1] !== viewName) {
+                viewHistory.push(viewName);
+                // Keep history manageable
+                if (viewHistory.length > 10) viewHistory.shift();
+            }
+
+            // Update back button visibility
+            updateBackButton();
+
             localStorage.setItem('tootsie-view', viewName);
+        }
+
+        // Update back button visibility
+        function updateBackButton() {
+            const backBtn = document.getElementById('backBtn');
+            if (viewHistory.length > 1) {
+                backBtn.classList.remove('hidden');
+            } else {
+                backBtn.classList.add('hidden');
+            }
+        }
+
+        // Go back to previous view
+        function goBack() {
+            if (viewHistory.length > 1) {
+                viewHistory.pop(); // Remove current view
+                const previousView = viewHistory[viewHistory.length - 1];
+                switchView(previousView, false);
+            }
         }
 
         // Render recent searches
@@ -1889,10 +2142,34 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
+        // Back button
+        document.getElementById('backBtn').addEventListener('click', goBack);
+
         // Main nav tab switching
         document.querySelectorAll('.main-nav-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 switchView(tab.dataset.view);
+            });
+        });
+
+        // Contacts view toggle (cards/list)
+        document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setContactsViewMode(btn.dataset.view);
+            });
+        });
+
+        // Contacts table header sorting
+        document.querySelectorAll('.contacts-table th[data-sort]').forEach(th => {
+            th.addEventListener('click', () => {
+                const key = th.dataset.sort;
+                if (contactsSortKey === key) {
+                    contactsSortAsc = !contactsSortAsc;
+                } else {
+                    contactsSortKey = key;
+                    contactsSortAsc = true;
+                }
+                renderContactsTable();
             });
         });
 
@@ -1921,9 +2198,8 @@
 
         // Restore last view (default to dashboard)
         const savedView = localStorage.getItem('tootsie-view') || 'dashboard';
-        if (savedView) {
-            switchView(savedView);
-        }
+        viewHistory = [savedView]; // Initialize history with starting view
+        switchView(savedView, false); // Don't add to history on init
 
         // Unregister service worker to fix caching issues
         if ('serviceWorker' in navigator) {
