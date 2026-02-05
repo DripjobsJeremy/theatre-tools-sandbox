@@ -3134,14 +3134,15 @@
             }, 100);
         }
 
-        // Schedule view mode state
-        let scheduleViewMode = 'calendar';
+        // Schedule view mode state - load from localStorage or default to calendar
+        let scheduleViewMode = localStorage.getItem('scheduleViewMode') || 'calendar';
         let calendarMonth = new Date().getMonth(); // Current month
         let calendarYear = new Date().getFullYear(); // Current year
 
         // Set schedule view mode (list or calendar)
         function setScheduleViewMode(mode) {
             scheduleViewMode = mode;
+            localStorage.setItem('scheduleViewMode', mode);
             const listContainer = document.getElementById('scheduleContent');
             const calendarContainer = document.getElementById('calendarContent');
 
@@ -3405,6 +3406,11 @@
             }
 
             localStorage.setItem('tootsie-view', viewName);
+
+            // Apply saved schedule view mode when switching to schedule
+            if (viewName === 'schedule') {
+                setScheduleViewMode(scheduleViewMode);
+            }
         }
 
         // Update back button visibility (deprecated - hamburger menu replaces this)
@@ -3845,6 +3851,9 @@
         renderCards();
         renderSchedule();
         renderContacts();
+
+        // Apply saved schedule view mode on init
+        setScheduleViewMode(scheduleViewMode);
 
         // Update cast count on dashboard (if element exists)
         const castCountEl = document.getElementById('castCount');
