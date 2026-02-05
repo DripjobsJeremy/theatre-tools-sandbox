@@ -7,11 +7,11 @@
     <!-- Version: 8 - Increased breakpoint to 600px for foldables -->
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#e91e63" id="themeColor">
+    <meta name="theme-color" content="#ED1C24" id="themeColor">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="TOOTSIE">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23e91e63' width='100' height='100' rx='20'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white' font-family='system-ui' font-weight='bold'>T</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23ED1C24' width='100' height='100' rx='20'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white' font-family='system-ui' font-weight='bold'>T</text></svg>">
     <style>
         * {
             box-sizing: border-box;
@@ -19,8 +19,8 @@
         }
 
         :root {
-            --pink: #e91e63;
-            --pink-light: #fce4ec;
+            --pink: #ED1C24;
+            --pink-light: #fde8e9;
             --blue: #2196f3;
             --blue-light: #e3f2fd;
             --gold: #ffc107;
@@ -38,8 +38,8 @@
         }
 
         [data-theme="dark"] {
-            --pink: #f06292;
-            --pink-light: #880e4f;
+            --pink: #f25c5c;
+            --pink-light: #5c1a1c;
             --blue: #64b5f6;
             --blue-light: #1a237e;
             --gold: #ffca28;
@@ -68,7 +68,7 @@
         .header {
             background: var(--pink);
             color: white;
-            padding: 12px 20px;
+            padding: 10px 20px;
             text-align: center;
             position: sticky;
             top: 0;
@@ -79,21 +79,47 @@
             align-items: center;
         }
 
-        .header-title {
-            text-align: center;
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             flex: 1;
+            justify-content: center;
+        }
+
+        .header-logo {
+            height: 70px;
+            width: auto;
+            border-radius: 8px;
+            background: white;
+            padding: 5px;
+        }
+
+        .header-logo-fallback {
+            display: none;
+            width: 70px;
+            height: 70px;
+            font-size: 44px;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+        }
+
+        .header-title {
+            text-align: left;
         }
 
         .header h1 {
             margin: 0;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
         }
 
         .header p {
-            margin: 2px 0 0;
-            font-size: 11px;
+            margin: 1px 0 0;
+            font-size: 10px;
             opacity: 0.9;
         }
 
@@ -111,10 +137,92 @@
             justify-content: center;
         }
 
-        .search-container {
-            padding: 12px 16px;
+        /* Hamburger Menu */
+        .hamburger-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 10px;
+        }
+
+        .hamburger-btn span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: white;
+            border-radius: 1px;
+            transition: transform 0.2s;
+        }
+
+        .hamburger-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .hamburger-menu {
+            position: fixed;
+            top: 56px;
+            left: 0;
             background: var(--card-bg);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 0 0 16px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 150;
+            min-width: 200px;
+            overflow: hidden;
+        }
+
+        .hamburger-menu.hidden {
+            display: none;
+        }
+
+        .menu-item {
+            display: block;
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            background: transparent;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .menu-item:hover {
+            background: var(--gray-light);
+        }
+
+        .menu-item:active {
+            background: var(--pink-light);
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 140;
+        }
+
+        .menu-overlay.hidden {
+            display: none;
+        }
+
+        /* Pages Search - Clean, minimal design */
+        .search-container {
+            padding: 16px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
         }
 
         .search-box {
@@ -125,42 +233,48 @@
         .search-input {
             flex: 1;
             padding: 12px 16px;
-            border: 2px solid var(--input-border);
-            border-radius: 12px;
-            font-size: 16px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            font-size: 15px;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
             background: var(--input-bg);
             color: var(--text);
         }
 
         .search-input:focus {
             border-color: var(--pink);
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
         }
 
         .search-input::placeholder {
             color: var(--text-muted);
         }
 
-        /* Recent searches */
+        /* Recent searches - subtle chips */
         .recent-searches {
             display: flex;
             gap: 6px;
-            margin-top: 8px;
+            margin-top: 10px;
             flex-wrap: wrap;
         }
 
+        .recent-searches:empty {
+            display: none;
+        }
+
         .recent-chip {
-            padding: 4px 10px;
+            padding: 6px 12px;
             background: var(--gray-light);
             border: none;
-            border-radius: 12px;
+            border-radius: 16px;
             font-size: 12px;
             color: var(--text-muted);
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
+            transition: background 0.15s;
         }
 
         .recent-chip:hover {
@@ -173,24 +287,22 @@
             opacity: 0.6;
         }
 
-        /* Dropdown filters */
+        /* Filters - Compact row layout */
         .dropdown-filters {
             display: flex;
             gap: 8px;
-            margin-top: 10px;
-            flex-direction: column;
+            margin-top: 12px;
         }
 
         .filter-row {
             display: flex;
-            flex-direction: column;
             gap: 8px;
+            flex: 1;
         }
 
-        /* Side-by-side only on tablets/desktop */
-        @media (min-width: 600px) {
-            .filter-row {
-                flex-direction: row;
+        @media (max-width: 500px) {
+            .dropdown-filters {
+                flex-direction: column;
             }
         }
 
@@ -208,6 +320,10 @@
             background-repeat: no-repeat;
             background-position: right 12px center;
             padding-right: 32px;
+            max-width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
         }
 
         /* Multi-select character filter */
@@ -345,49 +461,68 @@
 
         .filter-tabs {
             display: flex;
-            gap: 6px;
-            margin-top: 10px;
-            overflow-x: auto;
-            padding-bottom: 4px;
+            gap: 8px;
+            margin-top: 12px;
+            align-items: center;
         }
 
         .filter-tab {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 16px;
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             white-space: nowrap;
-            transition: all 0.2s;
+            transition: all 0.15s;
+            background: var(--card-bg);
+            color: var(--text-muted);
+        }
+
+        .filter-tab:hover {
+            border-color: var(--pink);
+            color: var(--pink);
         }
 
         .filter-tab.active {
             background: var(--pink);
+            border-color: var(--pink);
             color: white;
         }
 
-        .filter-tab:not(.active) {
-            background: var(--gray-light);
-            color: var(--text-muted);
+        .clear-filters-btn {
+            margin-left: auto;
         }
 
-        .act-selector {
+        /* Page Finder Layout with vertical sidebar */
+        .pagefinder-layout {
             display: flex;
-            gap: 6px;
-            padding: 10px 16px;
+            min-height: calc(100vh - 200px);
+        }
+
+        .act-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 12px 8px;
             background: var(--gray-light);
+            position: sticky;
+            top: 56px;
+            height: fit-content;
+            border-right: 1px solid var(--border);
         }
 
         .act-btn {
-            flex: 1;
-            padding: 10px;
-            border: 2px solid transparent;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 700;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s;
+            white-space: nowrap;
+            text-align: center;
+            background: var(--card-bg);
         }
 
         .act-btn.act1 {
@@ -421,51 +556,58 @@
         }
 
         .results {
-            padding: 12px 16px;
+            flex: 1;
+            padding: 16px;
             padding-bottom: 80px;
+            max-width: 600px;
         }
 
         .result-count {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
         }
 
+        /* Card design */
         .card {
             background: var(--card-bg);
-            border-radius: 16px;
+            border-radius: 10px;
             margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
             overflow: hidden;
-            transition: transform 0.2s;
+            transition: box-shadow 0.15s;
         }
 
-        .card:active {
-            transform: scale(0.98);
+        .card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 14px;
-            background: linear-gradient(90deg, var(--blue-light), var(--pink-light));
+            padding: 10px 12px;
+            background: var(--gray-light);
+            border-bottom: 1px solid var(--border);
         }
 
         .card-header.act2 {
-            background: linear-gradient(90deg, var(--gold-light), var(--pink-light));
+            background: var(--gold-light);
         }
 
         .act-scene {
             display: flex;
             gap: 6px;
+            align-items: center;
         }
 
         .badge {
             padding: 4px 8px;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 600;
         }
 
         .badge.act {
@@ -481,79 +623,92 @@
         .badge.scene {
             background: var(--card-bg);
             color: var(--text);
+            border: 1px solid var(--border);
         }
 
         .song-num {
             background: var(--pink);
             color: white;
             padding: 4px 8px;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 600;
         }
 
         .card-body {
-            padding: 14px;
+            padding: 12px;
         }
 
         .description {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .song-title {
-            font-size: 17px;
-            font-weight: 700;
+            font-size: 15px;
+            font-weight: 600;
             color: var(--text);
             margin-bottom: 12px;
         }
 
         .page-numbers {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .page-box {
             flex: 1;
-            padding: 14px 12px;
-            border-radius: 12px;
+            padding: 12px 10px;
+            border-radius: 8px;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.15s;
+            transition: transform 0.1s, opacity 0.1s;
             position: relative;
+            border: 1px solid transparent;
+        }
+
+        .page-box:hover {
+            opacity: 0.9;
         }
 
         .page-box:active {
-            transform: scale(0.96);
+            transform: scale(0.97);
         }
 
         .page-box.script {
-            background: var(--blue-light);
+            background: var(--blue);
+            color: white;
         }
 
         .page-box.libretto {
-            background: var(--pink-light);
+            background: var(--pink);
+            color: white;
         }
 
         .page-label {
             font-size: 10px;
-            font-weight: 600;
-            color: var(--text-muted);
+            font-weight: 500;
             text-transform: uppercase;
             margin-bottom: 4px;
+            opacity: 0.85;
         }
 
         .page-num {
-            font-size: 36px;
-            font-weight: 800;
-            color: var(--text);
+            font-size: 28px;
+            font-weight: 700;
             line-height: 1;
+        }
+
+        .page-box.script .page-label,
+        .page-box.script .page-num,
+        .page-box.libretto .page-label,
+        .page-box.libretto .page-num {
+            color: white;
         }
 
         .tap-hint {
             font-size: 9px;
-            color: var(--text-muted);
             margin-top: 4px;
             opacity: 0.7;
         }
@@ -676,124 +831,135 @@
             display: block;
         }
 
-        /* Schedule styles */
+        /* Schedule styles - Clean, professional design */
         .schedule-container {
-            padding: 12px 16px;
+            padding: 16px;
             padding-bottom: 80px;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .schedule-header {
-            text-align: center;
             margin-bottom: 16px;
         }
 
         .schedule-header h2 {
             margin: 0;
-            font-size: 18px;
+            font-size: 16px;
+            font-weight: 600;
             color: var(--text);
         }
 
         .schedule-header p {
-            margin: 4px 0 0;
+            margin: 2px 0 0;
             font-size: 12px;
             color: var(--text-muted);
         }
 
+        /* Clean day cards */
         .day-card {
             background: var(--card-bg);
-            border-radius: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
             overflow: hidden;
         }
 
         .day-header {
-            padding: 14px 16px;
-            background: linear-gradient(90deg, var(--pink), var(--blue));
+            padding: 12px 14px;
+            background: var(--pink);
             color: white;
         }
 
         .day-header .day-name {
-            font-size: 18px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 600;
             margin: 0;
         }
 
         .day-header .day-date {
-            font-size: 13px;
+            font-size: 12px;
             opacity: 0.9;
             margin: 2px 0 0;
         }
 
         .day-header .off-book-badge {
             display: inline-block;
-            background: rgba(255,255,255,0.25);
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 500;
             margin-top: 6px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .day-body {
-            padding: 12px 16px;
+            padding: 12px 14px;
         }
 
         .time-block {
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid var(--border);
         }
 
         .time-block:last-child {
             border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .time-block:first-child {
+            padding-top: 0;
         }
 
         .time-row {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 6px;
+            align-items: center;
         }
 
         .time-badge {
-            background: var(--gold);
-            color: #333;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 700;
+            background: var(--text);
+            color: var(--card-bg);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
             white-space: nowrap;
         }
 
+        [data-theme="dark"] .time-badge {
+            background: var(--pink);
+            color: white;
+        }
+
         .called-people {
-            font-size: 13px;
-            color: var(--text);
+            font-size: 12px;
+            color: var(--text-muted);
             font-weight: 500;
-            display: flex;
-            align-items: center;
         }
 
         .rehearsal-items {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            margin-top: 8px;
+            gap: 4px;
+            margin-top: 6px;
         }
 
         .rehearsal-item {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 12px;
+            padding: 6px 10px;
             background: var(--gray-light);
-            border-radius: 10px;
+            border-radius: 6px;
         }
 
         .rehearsal-item .song-badge {
             background: var(--pink);
             color: white;
-            padding: 3px 8px;
+            padding: 2px 6px;
             border-radius: 6px;
             font-size: 11px;
             font-weight: 700;
@@ -801,7 +967,7 @@
         }
 
         .rehearsal-item .item-title {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text);
             font-weight: 500;
         }
@@ -811,7 +977,7 @@
         }
 
         .rehearsal-item.run-item {
-            background: var(--pink-light);
+            background: rgba(233, 30, 99, 0.08);
         }
 
         .rehearsal-item.run-item .song-badge {
@@ -820,26 +986,39 @@
 
         .schedule-note {
             text-align: center;
-            padding: 20px;
+            padding: 16px;
             color: var(--text-muted);
-            font-size: 12px;
-            font-style: italic;
+            font-size: 11px;
         }
 
-        /* Show day special styling */
+        /* Show day styling */
         .day-card.show-day {
-            border: 2px solid var(--gold);
+            border-color: var(--gold);
+            border-width: 2px;
+        }
+
+        .day-card.show-day .day-header {
+            background: var(--gold);
+            color: #333;
+        }
+
+        .day-card.past-day {
+            opacity: 0.5;
+        }
+
+        .day-card.past-day .day-header {
+            background: var(--gray);
         }
 
         .day-header.show-header {
-            background: linear-gradient(90deg, var(--gold), var(--pink));
+            background: var(--gold);
+            color: #333;
         }
 
         .day-note {
-            padding: 10px 0;
-            font-size: 13px;
-            color: var(--text);
-            font-style: italic;
+            padding: 8px 0;
+            font-size: 12px;
+            color: var(--text-muted);
             border-top: 1px solid var(--border);
             margin-top: 8px;
         }
@@ -852,61 +1031,298 @@
             margin-top: 8px;
         }
 
-        /* Dashboard styles */
-        .dashboard-container {
-            padding: 20px 16px;
-            padding-bottom: 80px;
+        .location-link {
+            color: var(--blue);
+            text-decoration: none;
+            display: block;
         }
 
-        .dashboard-welcome {
-            text-align: center;
-            margin-bottom: 24px;
+        .location-link:hover {
+            text-decoration: underline;
+            color: var(--pink);
         }
 
-        .dashboard-welcome h2 {
+        .location-link:active {
+            opacity: 0.7;
+        }
+
+        /* Schedule view toggle */
+        .schedule-view-toggle {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        /* Calendar styles */
+        .calendar-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: var(--pink);
+            color: white;
+        }
+
+        .calendar-header h3 {
             margin: 0;
-            font-size: 24px;
-            color: var(--text);
+            font-size: 18px;
         }
 
-        .dashboard-welcome p {
-            margin: 8px 0 0;
-            font-size: 14px;
-            color: var(--text-muted);
+        .calendar-nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .dashboard-grid {
+        .calendar-nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .calendar-weekdays {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            grid-template-columns: repeat(7, 1fr);
+            background: var(--gray-light);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .calendar-weekday {
+            padding: 10px 4px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .calendar-day {
+            min-height: 80px;
+            padding: 6px;
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            background: var(--card-bg);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .calendar-day:nth-child(7n) {
+            border-right: none;
+        }
+
+        .calendar-day:hover {
+            background: var(--gray-light);
+        }
+
+        .calendar-day.other-month {
+            background: var(--gray-light);
+            opacity: 0.5;
+        }
+
+        .calendar-day.other-month.has-event {
+            opacity: 0.85;
+            cursor: pointer;
+        }
+
+        .calendar-day.other-month.has-event:hover {
+            opacity: 1;
+        }
+
+        .calendar-day.today {
+            background: var(--blue-light);
+            border: 2px solid var(--blue);
+            position: relative;
+        }
+
+        .calendar-day.today .calendar-day-num {
+            background: var(--blue);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .calendar-day-num {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .calendar-day.has-event .calendar-day-num {
+            color: var(--pink);
+        }
+
+        .calendar-event {
+            font-size: 9px;
+            padding: 3px 5px;
+            border-radius: 4px;
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+
+        .calendar-event.rehearsal {
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+
+        .calendar-event.show {
+            background: var(--gold-light);
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .calendar-event.special {
+            background: var(--pink-light);
+            color: var(--pink);
+        }
+
+        #calendarContent.hidden {
+            display: none;
+        }
+
+        #scheduleContent.hidden {
+            display: none;
+        }
+
+        /* Calendar day detail modal */
+        .calendar-day-detail {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .calendar-day-detail.hidden {
+            display: none;
+        }
+
+        .calendar-detail-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .calendar-detail-header {
+            padding: 16px;
+            background: var(--pink);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-detail-header h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .calendar-detail-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .calendar-detail-body {
+            padding: 16px;
+        }
+
+        /* Dashboard styles - Centered under header */
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 80px 20px 40px;
+            min-height: calc(100vh - 90px);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Horizontal button row - centered */
+        .dashboard-grid {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
         .dashboard-btn {
             background: var(--card-bg);
-            border: none;
-            border-radius: 20px;
-            padding: 24px 16px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: 12px;
+            width: 140px;
+            height: 140px;
+            text-align: center;
+        }
+
+        .dashboard-btn:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            border-color: var(--pink);
         }
 
         .dashboard-btn:active {
-            transform: scale(0.96);
+            transform: scale(0.97);
         }
 
         .dashboard-btn .icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 16px;
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 28px;
+            flex-shrink: 0;
         }
 
         .dashboard-btn.pagefinder .icon {
@@ -921,32 +1337,79 @@
             background: linear-gradient(135deg, var(--green), var(--blue));
         }
 
+        .dashboard-btn-text {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
         .dashboard-btn .label {
-            font-size: 15px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 600;
             color: var(--text);
+            white-space: nowrap;
         }
 
         .dashboard-btn .sublabel {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: -8px;
+            display: none;
         }
 
-        /* Full-width button for contacts */
-        .dashboard-grid .dashboard-btn.contacts {
-            grid-column: 1 / -1;
+        .dashboard-btn::after {
+            display: none;
         }
 
-        /* Quick stats on dashboard */
+        /* Ensure dashboard elements are always visible in both modes */
+        .dashboard-container,
+        .dashboard-grid,
+        .dashboard-btn,
+        .dashboard-btn .icon,
+        .dashboard-btn .label {
+            visibility: visible !important;
+            opacity: 1 !important;
+            display: flex !important;
+        }
+
+        .dashboard-grid {
+            display: flex !important;
+            flex-direction: row !important;
+        }
+
+        .dashboard-btn {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        /* Dark mode dashboard button visibility */
+        [data-theme="dark"] .dashboard-container {
+            background: transparent;
+        }
+
+        [data-theme="dark"] .dashboard-btn {
+            background: var(--card-bg) !important;
+            border-color: #555 !important;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
+        }
+
+        [data-theme="dark"] .dashboard-btn:hover {
+            border-color: var(--pink) !important;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.5) !important;
+        }
+
+        [data-theme="dark"] .dashboard-btn .label {
+            color: #fff !important;
+        }
+
+        [data-theme="dark"] .dashboard-btn .icon {
+            opacity: 1 !important;
+        }
+
+        /* Quick stats - hidden */
         .quick-stats {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            display: none;
         }
 
         .stat-card {
-            flex: 1;
+            display: none;
             background: var(--card-bg);
             border-radius: 12px;
             padding: 14px;
@@ -966,48 +1429,52 @@
             text-transform: uppercase;
         }
 
-        /* Contact list styles */
+        /* Contact list styles - Clean professional design */
         .contacts-container {
-            padding: 12px 16px;
+            padding: 16px;
             padding-bottom: 80px;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .contacts-header {
-            text-align: center;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .contacts-header h2 {
             margin: 0;
-            font-size: 18px;
+            font-size: 16px;
+            font-weight: 600;
             color: var(--text);
         }
 
         .contacts-header p {
-            margin: 4px 0 0;
+            margin: 2px 0 0;
             font-size: 12px;
             color: var(--text-muted);
         }
 
+        /* Clean contact cards */
         .contact-card {
             background: var(--card-bg);
-            border-radius: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
             overflow: hidden;
         }
 
         .contact-header {
-            padding: 14px 16px;
-            background: linear-gradient(90deg, var(--blue-light), var(--pink-light));
+            padding: 12px 14px;
+            background: var(--gray-light);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid var(--border);
         }
 
         .contact-name {
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 600;
             color: var(--text);
             cursor: pointer;
             text-decoration: none;
@@ -1020,16 +1487,16 @@
         .contact-character {
             background: var(--pink);
             color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 500;
         }
 
         .contact-body {
-            padding: 12px 16px;
+            padding: 10px 14px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .contact-action {
@@ -1037,15 +1504,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 12px;
+            gap: 6px;
+            padding: 10px;
             background: var(--gray-light);
-            border-radius: 12px;
+            border-radius: 6px;
             text-decoration: none;
             color: var(--text);
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
-            transition: background 0.2s;
+            transition: background 0.15s;
         }
 
         .contact-action:hover {
@@ -1053,15 +1520,19 @@
         }
 
         .contact-action:active {
-            transform: scale(0.96);
+            transform: scale(0.97);
         }
 
         .contact-action .action-icon {
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .contact-action.email {
-            background: var(--blue-light);
+            background: rgba(33, 150, 243, 0.1);
+        }
+
+        .contact-action.phone {
+            background: rgba(76, 175, 80, 0.1);
         }
 
         .contact-action.phone {
@@ -1069,42 +1540,48 @@
             background: rgba(76, 175, 80, 0.15);
         }
 
-        /* Schedule filters */
+        /* Schedule filters - Compact inline design */
         .schedule-filters {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-bottom: 16px;
+            gap: 8px;
+            margin-bottom: 12px;
             padding: 12px;
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            background: var(--gray-light);
+            border-radius: 8px;
         }
 
         .schedule-filter-row {
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            align-items: center;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 500px) {
             .schedule-filter-row {
-                flex-direction: column;
+                flex-wrap: wrap;
             }
         }
 
         .date-select, .schedule-char-select {
             flex: 1;
-            padding: 10px 12px;
-            border: 2px solid var(--input-border);
-            border-radius: 10px;
-            font-size: 14px;
-            background: var(--input-bg);
+            min-width: 120px;
+            padding: 8px 10px;
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            font-size: 13px;
+            background: var(--card-bg);
             color: var(--text);
             cursor: pointer;
+            max-width: 180px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
         }
 
-        /* Back button */
+        /* Back button - removed, keeping for reference */
         .back-btn {
+            display: none;
             background: rgba(255,255,255,0.2);
             border: none;
             color: white;
@@ -1138,26 +1615,26 @@
             display: flex;
             gap: 4px;
             background: var(--gray-light);
-            border-radius: 10px;
-            padding: 4px;
+            border-radius: 6px;
+            padding: 3px;
         }
 
         .view-toggle-btn {
-            padding: 8px 14px;
+            padding: 6px 12px;
             border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
             cursor: pointer;
             background: transparent;
             color: var(--text-muted);
-            transition: all 0.2s;
+            transition: all 0.15s;
         }
 
         .view-toggle-btn.active {
             background: var(--card-bg);
             color: var(--pink);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         /* Contact list table view */
@@ -1165,27 +1642,27 @@
             width: 100%;
             border-collapse: collapse;
             background: var(--card-bg);
-            border-radius: 12px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
         }
 
         .contacts-table th {
-            background: var(--pink);
-            color: white;
-            padding: 12px 10px;
+            background: var(--gray-light);
+            color: var(--text);
+            padding: 10px 8px;
             text-align: left;
-            font-size: 12px;
-            font-weight: 700;
+            font-size: 11px;
+            font-weight: 600;
             cursor: pointer;
             -webkit-user-select: none;
             user-select: none;
             white-space: nowrap;
+            border-bottom: 1px solid var(--border);
         }
 
         .contacts-table th:hover {
             background: var(--pink-light);
-            background: #d81b60;
         }
 
         .contacts-table th .sort-arrow {
@@ -1198,9 +1675,9 @@
         }
 
         .contacts-table td {
-            padding: 10px;
+            padding: 8px;
             border-bottom: 1px solid var(--border);
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text);
         }
 
@@ -1213,7 +1690,7 @@
         }
 
         .contacts-table .name-cell {
-            font-weight: 600;
+            font-weight: 500;
             color: var(--pink);
             cursor: pointer;
         }
@@ -1225,6 +1702,7 @@
         .contacts-table a {
             color: var(--blue);
             text-decoration: none;
+            font-size: 11px;
         }
 
         .contacts-table a:hover {
@@ -1233,7 +1711,7 @@
 
         .table-wrapper {
             overflow-x: auto;
-            border-radius: 12px;
+            border-radius: 8px;
         }
 
         /* Hide cards or table based on view */
@@ -1242,85 +1720,396 @@
             display: none;
         }
 
-        /* Clear filters button */
+        /* Clear filters button - Minimal design */
         .clear-filters-btn {
-            padding: 6px 14px;
-            border: 2px solid var(--gray);
-            border-radius: 16px;
-            font-size: 13px;
-            font-weight: 600;
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
             cursor: pointer;
-            background: transparent;
+            background: var(--card-bg);
             color: var(--text-muted);
-            transition: all 0.2s;
+            transition: all 0.15s;
             white-space: nowrap;
         }
 
         .clear-filters-btn:hover {
             border-color: var(--pink);
             color: var(--pink);
-            background: var(--pink-light);
         }
 
         .clear-filters-btn:active {
-            transform: scale(0.96);
+            transform: scale(0.97);
+        }
+
+        /* Past dates toggle button */
+        .past-dates-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--gray-light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            margin-bottom: 12px;
+            transition: all 0.15s;
+        }
+
+        .past-dates-toggle:hover {
+            background: var(--pink-light);
+            color: var(--pink);
+            border-color: var(--pink);
+        }
+
+        .past-dates-toggle .toggle-icon {
+            transition: transform 0.2s;
+        }
+
+        .past-dates-toggle.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .past-dates-count {
+            background: var(--gray);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+
+        /* Desktop sidebar navigation */
+        .desktop-sidebar {
+            display: none;
+        }
+
+        /* Calendar sizing for better visibility */
+        .calendar-day {
+            min-height: 70px;
+            padding: 6px;
+        }
+
+        .calendar-event {
+            font-size: 9px;
+            padding: 3px 5px;
+            margin-bottom: 2px;
+            white-space: normal;
+            word-wrap: break-word;
+            line-height: 1.2;
+        }
+
+        .calendar-day-num {
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        @media (max-width: 600px) {
+            .calendar-day {
+                min-height: 65px;
+                padding: 4px;
+            }
+
+            .calendar-event {
+                font-size: 8px;
+                padding: 2px 4px;
+            }
+
+            .calendar-day-num {
+                font-size: 11px;
+            }
+
+            .calendar-weekday {
+                padding: 8px 2px;
+                font-size: 10px;
+            }
+
+            .calendar-header h3 {
+                font-size: 16px;
+            }
+
+            .calendar-nav-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .calendar-day {
+                min-height: 60px;
+                padding: 3px;
+            }
+
+            .calendar-event {
+                font-size: 7px;
+                padding: 2px 3px;
+            }
+
+            .calendar-day-num {
+                font-size: 10px;
+            }
+        }
+
+        /* Desktop layout with sidebar */
+        @media (min-width: 768px) {
+            .hamburger-btn {
+                display: none;
+            }
+
+            .desktop-sidebar {
+                display: flex;
+                flex-direction: column;
+                width: 180px;
+                background: var(--card-bg);
+                border-right: 1px solid var(--border);
+                position: fixed;
+                top: 90px;
+                left: 0;
+                bottom: 0;
+                padding: 120px 8px 16px 8px;
+                gap: 4px;
+                z-index: 50;
+            }
+
+            .desktop-nav-btn {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 12px 14px;
+                border: none;
+                background: transparent;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 500;
+                color: var(--text);
+                cursor: pointer;
+                transition: all 0.15s;
+                text-align: left;
+            }
+
+            .desktop-nav-btn:hover {
+                background: var(--gray-light);
+            }
+
+            .desktop-nav-btn.active {
+                background: var(--pink-light);
+                color: var(--pink);
+            }
+
+            .desktop-nav-btn .nav-icon {
+                font-size: 18px;
+            }
+
+            .sidebar-spacer {
+                flex: 1;
+            }
+
+            .sidebar-dark-toggle {
+                border-top: 1px solid var(--border);
+                margin-top: 8px;
+                padding-top: 16px;
+            }
+
+            /* Hide header dark toggle on desktop */
+            .header .dark-toggle {
+                display: none;
+            }
+
+            /* Shift main content when sidebar is visible */
+            .view {
+                margin-left: 180px;
+            }
+
+            /* Center dashboard buttons under the header logo on desktop */
+            #dashboardView .dashboard-container {
+                position: relative;
+                left: -90px;
+                padding-top: 140px;
+            }
+
+            .hamburger-menu {
+                display: none !important;
+            }
+
+            .menu-overlay {
+                display: none !important;
+            }
+        }
+
+        /* Horizontal Act buttons integrated with filter tabs */
+        .filter-tabs-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            align-items: center;
+        }
+
+        .filter-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border);
+            margin: 0 4px;
+        }
+
+        @media (max-width: 500px) {
+            .filter-divider {
+                display: none;
+            }
+        }
+
+        /* Hide the vertical act-sidebar */
+        .act-sidebar {
+            display: none;
+        }
+
+        .pagefinder-layout {
+            display: block;
+        }
+
+        /* Compact results cards */
+        .card {
+            margin-bottom: 8px;
+        }
+
+        .card-header {
+            padding: 8px 10px;
+        }
+
+        .card-body {
+            padding: 10px;
+        }
+
+        .song-title {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+
+        .page-numbers {
+            gap: 6px;
+        }
+
+        .page-box {
+            padding: 8px 6px;
+        }
+
+        .page-num {
+            font-size: 22px;
+        }
+
+        .page-label {
+            font-size: 9px;
+            margin-bottom: 2px;
+        }
+
+        .tap-hint {
+            display: none;
+        }
+
+        .characters {
+            margin-top: 8px;
+            padding-top: 8px;
+            font-size: 11px;
+        }
+
+        .badge {
+            padding: 3px 6px;
+            font-size: 10px;
+        }
+
+        .song-num {
+            padding: 3px 6px;
+            font-size: 10px;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <button type="button" class="back-btn hidden" id="backBtn" title="Go back">←</button>
-        <div class="header-title">
-            <h1>TOOTSIE</h1>
-            <p>Script & Libretto Page Finder</p>
+        <button type="button" class="hamburger-btn" id="hamburgerBtn" title="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="header-brand">
+            <img src="logo.jpg" alt="The Valerie Players" class="header-logo" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';">
+            <div class="header-logo-fallback" id="logoFallback">🎭</div>
+            <div class="header-title">
+                <h1>TOOTSIE</h1>
+                <p>Production Assistant</p>
+            </div>
         </div>
         <button class="dark-toggle" id="darkToggle" title="Toggle dark mode">🌙</button>
     </div>
 
-    <nav class="main-nav">
-        <button class="main-nav-tab active" data-view="dashboard">Home</button>
-        <button class="main-nav-tab" data-view="pagefinder">Pages</button>
-        <button class="main-nav-tab" data-view="schedule">Schedule</button>
-        <button class="main-nav-tab" data-view="contacts">Cast</button>
-    </nav>
+    <!-- Hamburger Menu Dropdown -->
+    <div class="hamburger-menu hidden" id="hamburgerMenu">
+        <button type="button" class="menu-item" data-view="dashboard">🏠 Home</button>
+        <button type="button" class="menu-item" data-view="pagefinder">📖 Pages</button>
+        <button type="button" class="menu-item" data-view="schedule">📅 Schedule</button>
+        <button type="button" class="menu-item" data-view="contacts">👥 Cast</button>
+    </div>
+    <div class="menu-overlay hidden" id="menuOverlay"></div>
+
+    <!-- Desktop Sidebar Navigation (visible on desktop only) -->
+    <div class="desktop-sidebar" id="desktopSidebar">
+        <button type="button" class="desktop-nav-btn active" data-view="dashboard">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </button>
+        <button type="button" class="desktop-nav-btn" data-view="pagefinder">
+            <span class="nav-icon">📖</span>
+            <span>Pages</span>
+        </button>
+        <button type="button" class="desktop-nav-btn" data-view="schedule">
+            <span class="nav-icon">📅</span>
+            <span>Schedule</span>
+        </button>
+        <button type="button" class="desktop-nav-btn" data-view="contacts">
+            <span class="nav-icon">👥</span>
+            <span>Cast</span>
+        </button>
+        <div class="sidebar-spacer"></div>
+        <button type="button" class="desktop-nav-btn sidebar-dark-toggle" id="sidebarDarkToggle">
+            <span class="nav-icon">🌙</span>
+            <span>Dark Mode</span>
+        </button>
+    </div>
 
     <!-- Dashboard View -->
     <div class="view active" id="dashboardView">
         <div class="dashboard-container">
-            <div class="dashboard-welcome">
-                <h2>Welcome to TOOTSIE</h2>
-                <p>Quick access to everything you need</p>
-            </div>
             <div class="dashboard-grid">
                 <button type="button" class="dashboard-btn pagefinder" onclick="switchView('pagefinder')">
                     <div class="icon">📖</div>
-                    <div class="label">Page Finder</div>
-                    <div class="sublabel">Script & Libretto</div>
+                    <div class="dashboard-btn-text">
+                        <div class="label">Page Finder</div>
+                        <div class="sublabel">Find script & libretto pages</div>
+                    </div>
                 </button>
                 <button type="button" class="dashboard-btn schedule" onclick="switchView('schedule')">
                     <div class="icon">📅</div>
-                    <div class="label">Schedule</div>
-                    <div class="sublabel">Rehearsals</div>
+                    <div class="dashboard-btn-text">
+                        <div class="label">Schedule</div>
+                        <div class="sublabel">Rehearsals & show dates</div>
+                    </div>
                 </button>
                 <button type="button" class="dashboard-btn contacts" onclick="switchView('contacts')">
                     <div class="icon">👥</div>
-                    <div class="label">Cast Contact List</div>
-                    <div class="sublabel">Tap name to see their scenes</div>
+                    <div class="dashboard-btn-text">
+                        <div class="label">Cast</div>
+                        <div class="sublabel">Contact info & scenes</div>
+                    </div>
                 </button>
-            </div>
-            <div class="quick-stats">
-                <div class="stat-card">
-                    <div class="stat-num">38</div>
-                    <div class="stat-label">Scenes</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-num">24</div>
-                    <div class="stat-label">Songs</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-num" id="castCount">17</div>
-                    <div class="stat-label">Cast</div>
-                </div>
             </div>
         </div>
     </div><!-- End Dashboard View -->
@@ -1346,21 +2135,24 @@
             </div>
             <div class="selected-chars" id="selectedChars"></div>
         </div>
-        <div class="filter-tabs">
+        <div class="filter-tabs-row">
             <button class="filter-tab active" data-filter="all">All</button>
-            <button class="filter-tab" data-filter="songs">Songs Only</button>
-            <button class="filter-tab" data-filter="scenes">Scenes Only</button>
+            <button class="filter-tab" data-filter="songs">Songs</button>
+            <button class="filter-tab" data-filter="scenes">Scenes</button>
+            <div class="filter-divider"></div>
+            <button type="button" class="act-btn all active" data-act="all">All</button>
+            <button type="button" class="act-btn act1" data-act="1">ACT I</button>
+            <button type="button" class="act-btn act2" data-act="2">ACT II</button>
             <button class="clear-filters-btn" id="clearPageFilters" type="button">Clear</button>
         </div>
     </div>
 
-    <div class="act-selector">
-        <button class="act-btn all active" data-act="all">All</button>
-        <button class="act-btn act1" data-act="1">ACT I</button>
-        <button class="act-btn act2" data-act="2">ACT II</button>
+    <div class="pagefinder-layout">
+        <div class="act-sidebar">
+            <!-- Hidden via CSS -->
+        </div>
+        <div class="results" id="results"></div>
     </div>
-
-    <div class="results" id="results"></div>
     </div><!-- End Page Finder View -->
 
     <!-- Schedule View -->
@@ -1368,7 +2160,7 @@
         <div class="schedule-container">
             <div class="schedule-header">
                 <h2>Rehearsal Schedule</h2>
-                <p>February - March 2025</p>
+                <p>February - March</p>
             </div>
             <div class="schedule-filters">
                 <div class="schedule-filter-row">
@@ -1380,8 +2172,15 @@
                     </select>
                     <button class="clear-filters-btn" id="clearScheduleFilters" type="button">Clear</button>
                 </div>
+                <div class="schedule-view-toggle">
+                    <div class="view-toggle">
+                        <button type="button" class="view-toggle-btn active" data-schedule-view="list">📋 List</button>
+                        <button type="button" class="view-toggle-btn" data-schedule-view="calendar">📅 Calendar</button>
+                    </div>
+                </div>
             </div>
             <div id="scheduleContent"></div>
+            <div id="calendarContent" class="hidden"></div>
             <div class="schedule-note">
                 Schedule updated by stage management. Check for changes!
             </div>
@@ -1484,11 +2283,9 @@
         let contactsSortKey = 'first';
         let contactsSortAsc = true;
 
-        // Initialize dark mode
+        // Initialize dark mode (will be updated by updateDarkModeUI after DOM ready)
         if (isDark) {
             document.body.setAttribute('data-theme', 'dark');
-            document.getElementById('darkToggle').textContent = '☀️';
-            document.getElementById('themeColor').content = '#1a1a2e';
         }
 
         // Extract unique characters
@@ -1567,7 +2364,7 @@
             renderCards();
         }
 
-        // Populate song dropdown
+        // Populate song dropdown (max 60 chars)
         function initSongSelect() {
             const select = document.getElementById('songSelect');
             const savedSong = localStorage.getItem('tootsie-song') || '';
@@ -1583,7 +2380,8 @@
             uniqueSongs.forEach(song => {
                 const opt = document.createElement('option');
                 opt.value = song.num;
-                opt.textContent = `${song.num} - ${song.title}`;
+                const fullText = `${song.num} - ${song.title}`;
+                opt.textContent = fullText.length > 60 ? fullText.substring(0, 59) + '…' : fullText;
                 if (song.num === savedSong) opt.selected = true;
                 select.appendChild(opt);
             });
@@ -2004,6 +2802,20 @@
                         items: [
                             { type: "run", num: "Curtain", title: "2:00 PM" }
                         ]
+                    },
+                    {
+                        time: "Following Curtain",
+                        called: "All",
+                        items: [
+                            { type: "scene", num: "Strike", title: "Strike (set)" }
+                        ]
+                    },
+                    {
+                        time: "TBD",
+                        called: "All",
+                        items: [
+                            { type: "scene", num: "🎉 Party", title: "Cast Party - Location TBD" }
+                        ]
                     }
                 ]
             }
@@ -2033,6 +2845,13 @@
         // Schedule filter state
         let scheduleFilterDate = '';
         let scheduleFilterChar = '';
+        let showPastDates = false;
+
+        // Toggle past dates visibility
+        function togglePastDates() {
+            showPastDates = !showPastDates;
+            renderSchedule();
+        }
 
         // Render contacts list
         function renderContacts() {
@@ -2151,27 +2970,58 @@
             switchView('pagefinder');
         }
 
+        // Truncate text to max length
+        function truncateText(text, maxLen) {
+            return text.length > maxLen ? text.substring(0, maxLen - 1) + '…' : text;
+        }
+
         // Initialize schedule filters
         function initScheduleFilters() {
             const dateSelect = document.getElementById('scheduleDateFilter');
             const charSelect = document.getElementById('scheduleCharFilter');
 
-            // Populate date options
+            // Populate date options (max 30 chars)
             scheduleData.forEach(day => {
                 const opt = document.createElement('option');
                 opt.value = day.date;
-                opt.textContent = `${day.day}, ${day.date}`;
+                opt.textContent = truncateText(`${day.day}, ${day.date}`, 30);
                 dateSelect.appendChild(opt);
             });
 
-            // Populate character options from cast
+            // Populate character options from cast (max 30 chars)
             castData.filter(p => !['Stage Manager', 'Musical Director', 'Director', 'Ensemble'].includes(p.character))
                 .forEach(person => {
                     const opt = document.createElement('option');
                     opt.value = person.first;
-                    opt.textContent = `${person.first} ${person.last}`;
+                    opt.textContent = truncateText(`${person.first} ${person.last}`, 30);
                     charSelect.appendChild(opt);
                 });
+        }
+
+        // Check if a schedule date is in the past
+        function isDateInPast(dateStr) {
+            const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+            const parts = dateStr.split(' ');
+            const month = months.indexOf(parts[0]);
+            const day = parseInt(parts[1]);
+            const year = new Date().getFullYear(); // Use current year
+
+            const eventDate = new Date(year, month, day);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Compare dates only, not times
+
+            return eventDate < today;
+        }
+
+        // Find index of first upcoming (non-past) date
+        function findFirstUpcomingIndex(schedule) {
+            for (let i = 0; i < schedule.length; i++) {
+                if (!isDateInPast(schedule[i].date)) {
+                    return i;
+                }
+            }
+            return 0; // If all dates are past, return first
         }
 
         // Render schedule with filters
@@ -2185,13 +3035,44 @@
                 filteredSchedule = filteredSchedule.filter(day => day.date === scheduleFilterDate);
             }
 
-            if (filteredSchedule.length === 0) {
+            // Count past dates before filtering
+            const pastDatesCount = filteredSchedule.filter(day => isDateInPast(day.date)).length;
+            const upcomingDates = filteredSchedule.filter(day => !isDateInPast(day.date));
+
+            // Filter out past dates unless showPastDates is true
+            let displaySchedule = showPastDates ? filteredSchedule : upcomingDates;
+
+            // Build the toggle button HTML (only show if there are past dates)
+            let toggleButtonHTML = '';
+            if (pastDatesCount > 0 && !scheduleFilterDate) {
+                toggleButtonHTML = `
+                    <button type="button" class="past-dates-toggle ${showPastDates ? 'expanded' : ''}" onclick="togglePastDates()">
+                        <span class="toggle-icon">${showPastDates ? '▼' : '▶'}</span>
+                        <span>${showPastDates ? 'Hide' : 'Show'} past dates</span>
+                        <span class="past-dates-count">${pastDatesCount}</span>
+                    </button>
+                `;
+            }
+
+            if (displaySchedule.length === 0 && pastDatesCount === 0) {
                 container.innerHTML = '<div class="no-results"><div class="icon">📅</div><p>No rehearsals match your filter.</p></div>';
                 return;
             }
 
-            container.innerHTML = filteredSchedule.map(day => `
-                <div class="day-card ${day.isShow ? 'show-day' : ''}">
+            if (displaySchedule.length === 0 && pastDatesCount > 0) {
+                container.innerHTML = toggleButtonHTML + '<div class="no-results"><div class="icon">📅</div><p>All scheduled dates have passed.</p></div>';
+                return;
+            }
+
+            // Find first upcoming date index for auto-scroll (within displayed schedule)
+            const firstUpcomingIdx = displaySchedule.findIndex(day => !isDateInPast(day.date));
+
+            container.innerHTML = toggleButtonHTML + displaySchedule.map((day, idx) => {
+                const isPast = isDateInPast(day.date);
+                const isFirstUpcoming = idx === firstUpcomingIdx && !isPast;
+
+                return `
+                <div class="day-card ${day.isShow ? 'show-day' : ''} ${isPast ? 'past-day' : ''}" ${isFirstUpcoming ? 'id="firstUpcomingDay"' : ''}>
                     <div class="day-header ${day.isShow ? 'show-header' : ''}">
                         <div class="day-name">${day.day}</div>
                         <div class="day-date">${day.date}${day.title ? ` | ${day.title}` : ''}</div>
@@ -2215,19 +3096,282 @@
                             </div>
                         `).join('')}
                         ${day.note ? `<div class="day-note">📝 ${day.note}</div>` : ''}
-                        ${day.location ? `<div class="day-location">📍 ${day.location}</div>` : ''}
+                        ${day.location ? `<div class="day-location"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(day.location)}" target="_blank" class="location-link">📍 ${day.location}</a></div>` : ''}
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
+
+            // Auto-scroll to first upcoming day (with slight delay to ensure DOM is ready)
+            setTimeout(() => {
+                const firstUpcoming = document.getElementById('firstUpcomingDay');
+                if (firstUpcoming && !scheduleFilterDate && !showPastDates) {
+                    firstUpcoming.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+        }
+
+        // Schedule view mode state
+        let scheduleViewMode = 'list';
+        let calendarMonth = new Date().getMonth(); // Current month
+        let calendarYear = new Date().getFullYear(); // Current year
+
+        // Set schedule view mode (list or calendar)
+        function setScheduleViewMode(mode) {
+            scheduleViewMode = mode;
+            const listContainer = document.getElementById('scheduleContent');
+            const calendarContainer = document.getElementById('calendarContent');
+
+            document.querySelectorAll('[data-schedule-view]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.scheduleView === mode);
+            });
+
+            if (mode === 'list') {
+                listContainer.classList.remove('hidden');
+                calendarContainer.classList.add('hidden');
+            } else {
+                listContainer.classList.add('hidden');
+                calendarContainer.classList.remove('hidden');
+                renderCalendar();
+            }
+        }
+
+        // Parse schedule date to get month and day
+        function parseScheduleDate(dateStr) {
+            const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+            const parts = dateStr.split(' ');
+            const month = months.indexOf(parts[0]);
+            const day = parseInt(parts[1]);
+            return { month, day };
+        }
+
+        // Get events for a specific date
+        function getEventsForDate(month, day) {
+            return scheduleData.filter(event => {
+                const parsed = parseScheduleDate(event.date);
+                return parsed.month === month && parsed.day === day;
+            });
+        }
+
+        // Render calendar
+        function renderCalendar() {
+            const container = document.getElementById('calendarContent');
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                               'July', 'August', 'September', 'October', 'November', 'December'];
+
+            const firstDay = new Date(calendarYear, calendarMonth, 1);
+            const lastDay = new Date(calendarYear, calendarMonth + 1, 0);
+            const startDayOfWeek = firstDay.getDay();
+            const daysInMonth = lastDay.getDate();
+
+            // Get previous month's last days
+            const prevMonthLastDay = new Date(calendarYear, calendarMonth, 0).getDate();
+
+            let calendarHTML = `
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button type="button" class="calendar-nav-btn" onclick="changeCalendarMonth(-1)">←</button>
+                        <h3>${monthNames[calendarMonth]} ${calendarYear}</h3>
+                        <button type="button" class="calendar-nav-btn" onclick="changeCalendarMonth(1)">→</button>
+                    </div>
+                    <div class="calendar-weekdays">
+                        <div class="calendar-weekday">Sun</div>
+                        <div class="calendar-weekday">Mon</div>
+                        <div class="calendar-weekday">Tue</div>
+                        <div class="calendar-weekday">Wed</div>
+                        <div class="calendar-weekday">Thu</div>
+                        <div class="calendar-weekday">Fri</div>
+                        <div class="calendar-weekday">Sat</div>
+                    </div>
+                    <div class="calendar-grid">
+            `;
+
+            // Previous month days (with events!)
+            const prevMonth = calendarMonth === 0 ? 11 : calendarMonth - 1;
+            const prevMonthYear = calendarMonth === 0 ? calendarYear - 1 : calendarYear;
+
+            for (let i = startDayOfWeek - 1; i >= 0; i--) {
+                const day = prevMonthLastDay - i;
+                const prevMonthEvents = getEventsForDate(prevMonth, day);
+                const hasPrevMonthEvent = prevMonthEvents.length > 0;
+
+                let prevDayClasses = 'calendar-day other-month';
+                if (hasPrevMonthEvent) prevDayClasses += ' has-event';
+
+                calendarHTML += `<div class="${prevDayClasses}" ${hasPrevMonthEvent ? `onclick="showDayDetail(${prevMonth}, ${day})"` : ''}>`;
+                calendarHTML += `<div class="calendar-day-num">${day}</div>`;
+
+                prevMonthEvents.forEach(event => {
+                    let eventClass = 'calendar-event';
+                    if (event.isShow) eventClass += ' show';
+                    else if (event.title && (event.title.includes('Gala') || event.title.includes('Party'))) eventClass += ' special';
+                    else eventClass += ' rehearsal';
+
+                    const label = event.title || event.blocks[0]?.items[0]?.title || 'Rehearsal';
+                    calendarHTML += `<div class="${eventClass}">${label}</div>`;
+                });
+
+                calendarHTML += '</div>';
+            }
+
+            // Current month days
+            const today = new Date();
+            for (let day = 1; day <= daysInMonth; day++) {
+                const events = getEventsForDate(calendarMonth, day);
+                const isToday = today.getDate() === day && today.getMonth() === calendarMonth && today.getFullYear() === calendarYear;
+                const hasEvent = events.length > 0;
+
+                let dayClasses = 'calendar-day';
+                if (isToday) dayClasses += ' today';
+                if (hasEvent) dayClasses += ' has-event';
+
+                calendarHTML += `<div class="${dayClasses}" onclick="showDayDetail(${calendarMonth}, ${day})">`;
+                calendarHTML += `<div class="calendar-day-num">${day}</div>`;
+
+                events.forEach(event => {
+                    let eventClass = 'calendar-event';
+                    if (event.isShow) eventClass += ' show';
+                    else if (event.title && (event.title.includes('Gala') || event.title.includes('Party'))) eventClass += ' special';
+                    else eventClass += ' rehearsal';
+
+                    const label = event.title || event.blocks[0]?.items[0]?.title || 'Rehearsal';
+                    calendarHTML += `<div class="${eventClass}">${label}</div>`;
+                });
+
+                calendarHTML += '</div>';
+            }
+
+            // Next month days to fill the grid (with events!)
+            const totalCells = startDayOfWeek + daysInMonth;
+            const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+            const nextMonth = calendarMonth === 11 ? 0 : calendarMonth + 1;
+            const nextMonthYear = calendarMonth === 11 ? calendarYear + 1 : calendarYear;
+
+            for (let i = 1; i <= remainingCells; i++) {
+                const nextMonthEvents = getEventsForDate(nextMonth, i);
+                const hasNextMonthEvent = nextMonthEvents.length > 0;
+
+                let nextDayClasses = 'calendar-day other-month';
+                if (hasNextMonthEvent) nextDayClasses += ' has-event';
+
+                calendarHTML += `<div class="${nextDayClasses}" ${hasNextMonthEvent ? `onclick="showDayDetail(${nextMonth}, ${i})"` : ''}>`;
+                calendarHTML += `<div class="calendar-day-num">${i}</div>`;
+
+                nextMonthEvents.forEach(event => {
+                    let eventClass = 'calendar-event';
+                    if (event.isShow) eventClass += ' show';
+                    else if (event.title && (event.title.includes('Gala') || event.title.includes('Party'))) eventClass += ' special';
+                    else eventClass += ' rehearsal';
+
+                    const label = event.title || event.blocks[0]?.items[0]?.title || 'Rehearsal';
+                    calendarHTML += `<div class="${eventClass}">${label}</div>`;
+                });
+
+                calendarHTML += '</div>';
+            }
+
+            calendarHTML += '</div></div>';
+
+            // Add day detail modal
+            calendarHTML += '<div class="calendar-day-detail hidden" id="calendarDayDetail"></div>';
+
+            container.innerHTML = calendarHTML;
+        }
+
+        // Change calendar month
+        function changeCalendarMonth(delta) {
+            calendarMonth += delta;
+            if (calendarMonth > 11) {
+                calendarMonth = 0;
+                calendarYear++;
+            } else if (calendarMonth < 0) {
+                calendarMonth = 11;
+                calendarYear--;
+            }
+            renderCalendar();
+        }
+
+        // Show day detail
+        function showDayDetail(month, day) {
+            const events = getEventsForDate(month, day);
+            if (events.length === 0) return;
+
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                               'July', 'August', 'September', 'October', 'November', 'December'];
+
+            const modal = document.getElementById('calendarDayDetail');
+
+            let html = `
+                <div class="calendar-detail-card">
+                    <div class="calendar-detail-header ${events[0].isShow ? 'show-header' : ''}">
+                        <h3>${monthNames[month]} ${day}</h3>
+                        <button type="button" class="calendar-detail-close" onclick="closeDayDetail()">×</button>
+                    </div>
+                    <div class="calendar-detail-body">
+            `;
+
+            events.forEach(event => {
+                html += `
+                    <div class="day-card ${event.isShow ? 'show-day' : ''}" style="margin-bottom: 12px;">
+                        <div class="day-header ${event.isShow ? 'show-header' : ''}">
+                            <div class="day-name">${event.day}</div>
+                            <div class="day-date">${event.date}${event.title ? ` | ${event.title}` : ''}</div>
+                        </div>
+                        <div class="day-body">
+                            ${event.blocks.map(block => `
+                                <div class="time-block">
+                                    <div class="time-row">
+                                        <span class="time-badge">${block.time}</span>
+                                        <span class="called-people">${block.called}</span>
+                                    </div>
+                                    <div class="rehearsal-items">
+                                        ${block.items.map(item => `
+                                            <div class="rehearsal-item ${item.type === 'run' ? 'run-item' : ''} ${item.type === 'scene' ? 'scene-item' : ''}">
+                                                <span class="song-badge">${item.num}</span>
+                                                <span class="item-title">${item.title}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                            ${event.note ? `<div class="day-note">📝 ${event.note}</div>` : ''}
+                            ${event.location ? `<div class="day-location"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}" target="_blank" class="location-link">📍 ${event.location}</a></div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div></div>';
+            modal.innerHTML = html;
+            modal.classList.remove('hidden');
+        }
+
+        // Close day detail modal
+        function closeDayDetail() {
+            document.getElementById('calendarDayDetail').classList.add('hidden');
         }
 
         // Tab switching with history tracking
         function switchView(viewName, addToHistory = true) {
-            document.querySelectorAll('.main-nav-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            const targetView = document.getElementById(`${viewName}View`);
+            if (targetView) {
+                targetView.classList.add('active');
+            } else {
+                // Fallback to dashboard if view not found
+                document.getElementById('dashboardView').classList.add('active');
+                viewName = 'dashboard';
+            }
 
-            document.querySelector(`.main-nav-tab[data-view="${viewName}"]`).classList.add('active');
-            document.getElementById(`${viewName}View`).classList.add('active');
+            // Update desktop sidebar active state
+            document.querySelectorAll('.desktop-nav-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === viewName);
+            });
+
+            // Update hamburger menu active state
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.view === viewName);
+            });
 
             // Track navigation history
             if (addToHistory && viewHistory[viewHistory.length - 1] !== viewName) {
@@ -2236,20 +3380,12 @@
                 if (viewHistory.length > 10) viewHistory.shift();
             }
 
-            // Update back button visibility
-            updateBackButton();
-
             localStorage.setItem('tootsie-view', viewName);
         }
 
-        // Update back button visibility
+        // Update back button visibility (deprecated - hamburger menu replaces this)
         function updateBackButton() {
-            const backBtn = document.getElementById('backBtn');
-            if (viewHistory.length > 1) {
-                backBtn.classList.remove('hidden');
-            } else {
-                backBtn.classList.add('hidden');
-            }
+            // No longer used - hamburger menu replaces back button
         }
 
         // Go back to previous view
@@ -2428,12 +3564,10 @@
                                 <div class="page-box script" onclick="copyToClipboard('${item.scriptPg || '—'}', 'Script')">
                                     <div class="page-label">Script Page</div>
                                     <div class="page-num">${item.scriptPg || '—'}</div>
-                                    <div class="tap-hint">tap to copy</div>
                                 </div>
                                 <div class="page-box libretto" onclick="copyToClipboard('${item.librettoPg || '—'}', 'Libretto')">
                                     <div class="page-label">Libretto Page</div>
                                     <div class="page-num">${item.librettoPg || '—'}</div>
-                                    <div class="tap-hint">tap to copy</div>
                                 </div>
                             </div>
                             <div class="characters"><strong>Characters:</strong> ${item.characters}</div>
@@ -2533,20 +3667,56 @@
             });
         });
 
-        // Dark mode toggle
-        document.getElementById('darkToggle').addEventListener('click', () => {
+        // Dark mode toggle function
+        function toggleDarkMode() {
             isDark = !isDark;
             localStorage.setItem('tootsie-dark', isDark);
-            if (isDark) {
-                document.body.setAttribute('data-theme', 'dark');
-                document.getElementById('darkToggle').textContent = '☀️';
-                document.getElementById('themeColor').content = '#1a1a2e';
-            } else {
-                document.body.removeAttribute('data-theme');
-                document.getElementById('darkToggle').textContent = '🌙';
-                document.getElementById('themeColor').content = '#e91e63';
+            updateDarkModeUI();
+        }
+
+        function updateDarkModeUI() {
+            try {
+                const headerToggle = document.getElementById('darkToggle');
+                const sidebarToggle = document.getElementById('sidebarDarkToggle');
+                const themeColor = document.getElementById('themeColor');
+
+                if (isDark) {
+                    document.body.setAttribute('data-theme', 'dark');
+                    if (headerToggle) headerToggle.textContent = '☀️';
+                    if (themeColor) themeColor.content = '#1a1a2e';
+                    if (sidebarToggle) {
+                        const navIcon = sidebarToggle.querySelector('.nav-icon');
+                        const label = sidebarToggle.querySelector('span:not(.nav-icon)');
+                        if (navIcon) navIcon.textContent = '☀️';
+                        if (label) label.textContent = 'Light Mode';
+                    }
+                } else {
+                    document.body.removeAttribute('data-theme');
+                    if (headerToggle) headerToggle.textContent = '🌙';
+                    if (themeColor) themeColor.content = '#ED1C24';
+                    if (sidebarToggle) {
+                        const navIcon = sidebarToggle.querySelector('.nav-icon');
+                        const label = sidebarToggle.querySelector('span:not(.nav-icon)');
+                        if (navIcon) navIcon.textContent = '🌙';
+                        if (label) label.textContent = 'Dark Mode';
+                    }
+                }
+            } catch (e) {
+                console.error('Dark mode toggle error:', e);
             }
-        });
+        }
+
+        // Header dark mode toggle
+        document.getElementById('darkToggle').addEventListener('click', toggleDarkMode);
+
+        // Sidebar dark mode toggle
+        const sidebarDarkToggle = document.getElementById('sidebarDarkToggle');
+        if (sidebarDarkToggle) {
+            sidebarDarkToggle.addEventListener('click', toggleDarkMode);
+        }
+
+        // Initialize dark mode UI state
+        updateDarkModeUI();
 
         // Scroll to top button
         const scrollBtn = document.getElementById('scrollTop');
@@ -2557,13 +3727,36 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // Back button
-        document.getElementById('backBtn').addEventListener('click', goBack);
+        // Hamburger menu
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
 
-        // Main nav tab switching
-        document.querySelectorAll('.main-nav-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                switchView(tab.dataset.view);
+        function toggleMenu() {
+            hamburgerMenu.classList.toggle('hidden');
+            menuOverlay.classList.toggle('hidden');
+        }
+
+        function closeMenu() {
+            hamburgerMenu.classList.add('hidden');
+            menuOverlay.classList.add('hidden');
+        }
+
+        hamburgerBtn.addEventListener('click', toggleMenu);
+        menuOverlay.addEventListener('click', closeMenu);
+
+        // Menu item navigation (hamburger menu)
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', () => {
+                switchView(item.dataset.view);
+                closeMenu();
+            });
+        });
+
+        // Desktop sidebar navigation
+        document.querySelectorAll('.desktop-nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchView(btn.dataset.view);
             });
         });
 
@@ -2603,6 +3796,23 @@
         document.getElementById('clearPageFilters').addEventListener('click', clearPageFinderFilters);
         document.getElementById('clearScheduleFilters').addEventListener('click', clearScheduleFilters);
 
+        // Schedule view toggle (list/calendar)
+        document.querySelectorAll('[data-schedule-view]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setScheduleViewMode(btn.dataset.scheduleView);
+            });
+        });
+
+        // Close calendar day detail when clicking outside
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('calendarDayDetail');
+            if (modal && !modal.classList.contains('hidden')) {
+                if (e.target === modal) {
+                    closeDayDetail();
+                }
+            }
+        });
+
         // Initialize
         initCharacterSelect();
         initSongSelect();
@@ -2612,8 +3822,9 @@
         renderSchedule();
         renderContacts();
 
-        // Update cast count on dashboard
-        document.getElementById('castCount').textContent = castData.length;
+        // Update cast count on dashboard (if element exists)
+        const castCountEl = document.getElementById('castCount');
+        if (castCountEl) castCountEl.textContent = castData.length;
 
         // Restore last view (default to dashboard)
         const savedView = localStorage.getItem('tootsie-view') || 'dashboard';
