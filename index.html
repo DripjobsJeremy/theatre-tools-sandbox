@@ -318,12 +318,14 @@
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23757575' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 12px center;
-            padding-right: 32px;
-            max-width: 100%;
+            background-position: right 10px center;
+            padding-right: 30px;
+            min-width: 0;
+            width: 100%;
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
+            box-sizing: border-box;
         }
 
         /* Multi-select character filter */
@@ -513,16 +515,18 @@
         }
 
         .act-btn {
-            padding: 8px 12px;
+            padding: 8px 14px;
             border: 1px solid var(--border);
             border-radius: 6px;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.15s;
             white-space: nowrap;
             text-align: center;
             background: var(--card-bg);
+            color: var(--text-muted);
+            min-width: 60px;
         }
 
         .act-btn.act1 {
@@ -1941,12 +1945,18 @@
             }
         }
 
-        /* Horizontal Act buttons integrated with filter tabs */
+        /* Filter tabs and Act buttons layout */
         .filter-tabs-row {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
             margin-top: 12px;
+            align-items: center;
+        }
+
+        .filter-row-group {
+            display: flex;
+            gap: 8px;
             align-items: center;
         }
 
@@ -1957,7 +1967,17 @@
             margin: 0 4px;
         }
 
+        /* Mobile: stack rows and hide divider */
         @media (max-width: 500px) {
+            .filter-tabs-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-row-group {
+                justify-content: flex-start;
+            }
+
             .filter-divider {
                 display: none;
             }
@@ -2136,14 +2156,18 @@
             <div class="selected-chars" id="selectedChars"></div>
         </div>
         <div class="filter-tabs-row">
-            <button class="filter-tab active" data-filter="all">All</button>
-            <button class="filter-tab" data-filter="songs">Songs</button>
-            <button class="filter-tab" data-filter="scenes">Scenes</button>
+            <div class="filter-row-group">
+                <button type="button" class="filter-tab active" data-filter="all">All</button>
+                <button type="button" class="filter-tab" data-filter="songs">Songs</button>
+                <button type="button" class="filter-tab" data-filter="scenes">Scenes</button>
+            </div>
             <div class="filter-divider"></div>
-            <button type="button" class="act-btn all active" data-act="all">All</button>
-            <button type="button" class="act-btn act1" data-act="1">ACT I</button>
-            <button type="button" class="act-btn act2" data-act="2">ACT II</button>
-            <button class="clear-filters-btn" id="clearPageFilters" type="button">Clear</button>
+            <div class="filter-row-group">
+                <button type="button" class="act-btn all active" data-act="all">All</button>
+                <button type="button" class="act-btn act1" data-act="1">Act 1</button>
+                <button type="button" class="act-btn act2" data-act="2">Act 2</button>
+                <button class="clear-filters-btn" id="clearPageFilters" type="button">Clear</button>
+            </div>
         </div>
     </div>
 
@@ -3111,7 +3135,7 @@
         }
 
         // Schedule view mode state
-        let scheduleViewMode = 'list';
+        let scheduleViewMode = 'calendar';
         let calendarMonth = new Date().getMonth(); // Current month
         let calendarYear = new Date().getFullYear(); // Current year
 
