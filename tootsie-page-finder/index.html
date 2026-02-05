@@ -1,0 +1,2634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TOOTSIE - Page Finder</title>
+    <!-- Version: 8 - Increased breakpoint to 600px for foldables -->
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#e91e63" id="themeColor">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TOOTSIE">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23e91e63' width='100' height='100' rx='20'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white' font-family='system-ui' font-weight='bold'>T</text></svg>">
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --pink: #e91e63;
+            --pink-light: #fce4ec;
+            --blue: #2196f3;
+            --blue-light: #e3f2fd;
+            --gold: #ffc107;
+            --gold-light: #fff8e1;
+            --green: #4caf50;
+            --gray: #757575;
+            --gray-light: #f5f5f5;
+            --bg: linear-gradient(135deg, var(--pink-light) 0%, #fff 100%);
+            --card-bg: white;
+            --text: #333;
+            --text-muted: #757575;
+            --border: #eee;
+            --input-bg: white;
+            --input-border: #ddd;
+        }
+
+        [data-theme="dark"] {
+            --pink: #f06292;
+            --pink-light: #880e4f;
+            --blue: #64b5f6;
+            --blue-light: #1a237e;
+            --gold: #ffca28;
+            --gold-light: #5d4037;
+            --gray: #9e9e9e;
+            --gray-light: #424242;
+            --bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --card-bg: #1e1e2f;
+            --text: #f5f5f5;
+            --text-muted: #9e9e9e;
+            --border: #333;
+            --input-bg: #2d2d44;
+            --input-border: #444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            min-height: 100vh;
+            color: var(--text);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .header {
+            background: var(--pink);
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            text-align: center;
+            flex: 1;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            margin: 2px 0 0;
+            font-size: 11px;
+            opacity: 0.9;
+        }
+
+        .dark-toggle {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-container {
+            padding: 12px 16px;
+            background: var(--card-bg);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 8px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid var(--input-border);
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+            background: var(--input-bg);
+            color: var(--text);
+        }
+
+        .search-input:focus {
+            border-color: var(--pink);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Recent searches */
+        .recent-searches {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .recent-chip {
+            padding: 4px 10px;
+            background: var(--gray-light);
+            border: none;
+            border-radius: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .recent-chip:hover {
+            background: var(--pink-light);
+            color: var(--pink);
+        }
+
+        .recent-chip .close {
+            font-size: 14px;
+            opacity: 0.6;
+        }
+
+        /* Dropdown filters */
+        .dropdown-filters {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-direction: column;
+        }
+
+        .filter-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* Side-by-side only on tablets/desktop */
+        @media (min-width: 600px) {
+            .filter-row {
+                flex-direction: row;
+            }
+        }
+
+        .filter-select {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--input-bg);
+            color: var(--text);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23757575' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+        }
+
+        /* Multi-select character filter */
+        .multi-select-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .multi-select-btn {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--input-bg);
+            color: var(--text);
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .multi-select-btn::after {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23757575' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-size: contain;
+            flex-shrink: 0;
+        }
+
+        .multi-select-btn.open::after {
+            transform: rotate(180deg);
+        }
+
+        .multi-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            margin-top: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .multi-select-dropdown.open {
+            display: block;
+        }
+
+        .multi-select-option {
+            padding: 10px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .multi-select-option:last-child {
+            border-bottom: none;
+        }
+
+        .multi-select-option:hover {
+            background: var(--gray-light);
+        }
+
+        .multi-select-option.selected {
+            background: var(--pink-light);
+            color: var(--pink);
+        }
+
+        .multi-select-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--gray);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .multi-select-option.selected .multi-select-checkbox {
+            background: var(--pink);
+            border-color: var(--pink);
+        }
+
+        .multi-select-option.selected .multi-select-checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Selected character chips */
+        .selected-chars {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .selected-chars:empty {
+            display: none;
+        }
+
+        .char-chip {
+            padding: 4px 8px;
+            background: var(--pink);
+            color: white;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .char-chip .remove {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        .char-chip:hover .remove {
+            opacity: 1;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .filter-tab {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .filter-tab.active {
+            background: var(--pink);
+            color: white;
+        }
+
+        .filter-tab:not(.active) {
+            background: var(--gray-light);
+            color: var(--text-muted);
+        }
+
+        .act-selector {
+            display: flex;
+            gap: 6px;
+            padding: 10px 16px;
+            background: var(--gray-light);
+        }
+
+        .act-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .act-btn.act1 {
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+
+        .act-btn.act1.active {
+            background: var(--blue);
+            color: white;
+        }
+
+        .act-btn.act2 {
+            background: var(--gold-light);
+            color: var(--gold);
+        }
+
+        .act-btn.act2.active {
+            background: var(--gold);
+            color: #333;
+        }
+
+        .act-btn.all {
+            background: var(--pink-light);
+            color: var(--pink);
+        }
+
+        .act-btn.all.active {
+            background: var(--pink);
+            color: white;
+        }
+
+        .results {
+            padding: 12px 16px;
+            padding-bottom: 80px;
+        }
+
+        .result-count {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .card:active {
+            transform: scale(0.98);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: linear-gradient(90deg, var(--blue-light), var(--pink-light));
+        }
+
+        .card-header.act2 {
+            background: linear-gradient(90deg, var(--gold-light), var(--pink-light));
+        }
+
+        .act-scene {
+            display: flex;
+            gap: 6px;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge.act {
+            background: var(--blue);
+            color: white;
+        }
+
+        .badge.act.act2 {
+            background: var(--gold);
+            color: #333;
+        }
+
+        .badge.scene {
+            background: var(--card-bg);
+            color: var(--text);
+        }
+
+        .song-num {
+            background: var(--pink);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .card-body {
+            padding: 14px;
+        }
+
+        .description {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .song-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+
+        .page-numbers {
+            display: flex;
+            gap: 10px;
+        }
+
+        .page-box {
+            flex: 1;
+            padding: 14px 12px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            position: relative;
+        }
+
+        .page-box:active {
+            transform: scale(0.96);
+        }
+
+        .page-box.script {
+            background: var(--blue-light);
+        }
+
+        .page-box.libretto {
+            background: var(--pink-light);
+        }
+
+        .page-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .page-num {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1;
+        }
+
+        .tap-hint {
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            opacity: 0.7;
+        }
+
+        .copied-toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--green);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .copied-toast.show {
+            opacity: 1;
+        }
+
+        .characters {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .characters strong {
+            color: var(--text);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .no-results .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .quick-jump {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--pink);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(233, 30, 99, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+        }
+
+        .song-only .description,
+        .song-only .characters {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .results {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+        }
+
+        /* Main navigation tabs */
+        .main-nav {
+            display: flex;
+            background: var(--card-bg);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .main-nav-tab {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .main-nav-tab.active {
+            color: var(--pink);
+        }
+
+        .main-nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--pink);
+        }
+
+        /* View containers */
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* Schedule styles */
+        .schedule-container {
+            padding: 12px 16px;
+            padding-bottom: 80px;
+        }
+
+        .schedule-header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .schedule-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--text);
+        }
+
+        .schedule-header p {
+            margin: 4px 0 0;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .day-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .day-header {
+            padding: 14px 16px;
+            background: linear-gradient(90deg, var(--pink), var(--blue));
+            color: white;
+        }
+
+        .day-header .day-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .day-header .day-date {
+            font-size: 13px;
+            opacity: 0.9;
+            margin: 2px 0 0;
+        }
+
+        .day-header .off-book-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.25);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .day-body {
+            padding: 12px 16px;
+        }
+
+        .time-block {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .time-block:last-child {
+            border-bottom: none;
+        }
+
+        .time-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .time-badge {
+            background: var(--gold);
+            color: #333;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .called-people {
+            font-size: 13px;
+            color: var(--text);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .rehearsal-items {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .rehearsal-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--gray-light);
+            border-radius: 10px;
+        }
+
+        .rehearsal-item .song-badge {
+            background: var(--pink);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .rehearsal-item .item-title {
+            font-size: 14px;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .rehearsal-item.scene-item .song-badge {
+            background: var(--blue);
+        }
+
+        .rehearsal-item.run-item {
+            background: var(--pink-light);
+        }
+
+        .rehearsal-item.run-item .song-badge {
+            background: var(--pink);
+        }
+
+        .schedule-note {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-style: italic;
+        }
+
+        /* Show day special styling */
+        .day-card.show-day {
+            border: 2px solid var(--gold);
+        }
+
+        .day-header.show-header {
+            background: linear-gradient(90deg, var(--gold), var(--pink));
+        }
+
+        .day-note {
+            padding: 10px 0;
+            font-size: 13px;
+            color: var(--text);
+            font-style: italic;
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+        }
+
+        .day-location {
+            padding: 8px 0;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+        }
+
+        /* Dashboard styles */
+        .dashboard-container {
+            padding: 20px 16px;
+            padding-bottom: 80px;
+        }
+
+        .dashboard-welcome {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .dashboard-welcome h2 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--text);
+        }
+
+        .dashboard-welcome p {
+            margin: 8px 0 0;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .dashboard-btn {
+            background: var(--card-bg);
+            border: none;
+            border-radius: 20px;
+            padding: 24px 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dashboard-btn:active {
+            transform: scale(0.96);
+        }
+
+        .dashboard-btn .icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .dashboard-btn.pagefinder .icon {
+            background: linear-gradient(135deg, var(--blue), var(--pink));
+        }
+
+        .dashboard-btn.schedule .icon {
+            background: linear-gradient(135deg, var(--pink), var(--gold));
+        }
+
+        .dashboard-btn.contacts .icon {
+            background: linear-gradient(135deg, var(--green), var(--blue));
+        }
+
+        .dashboard-btn .label {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .dashboard-btn .sublabel {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: -8px;
+        }
+
+        /* Full-width button for contacts */
+        .dashboard-grid .dashboard-btn.contacts {
+            grid-column: 1 / -1;
+        }
+
+        /* Quick stats on dashboard */
+        .quick-stats {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .stat-card .stat-num {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--pink);
+        }
+
+        .stat-card .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Contact list styles */
+        .contacts-container {
+            padding: 12px 16px;
+            padding-bottom: 80px;
+        }
+
+        .contacts-header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .contacts-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--text);
+        }
+
+        .contacts-header p {
+            margin: 4px 0 0;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .contact-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .contact-header {
+            padding: 14px 16px;
+            background: linear-gradient(90deg, var(--blue-light), var(--pink-light));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .contact-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .contact-name:hover {
+            color: var(--pink);
+        }
+
+        .contact-character {
+            background: var(--pink);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .contact-body {
+            padding: 12px 16px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .contact-action {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            background: var(--gray-light);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .contact-action:hover {
+            background: var(--pink-light);
+        }
+
+        .contact-action:active {
+            transform: scale(0.96);
+        }
+
+        .contact-action .action-icon {
+            font-size: 18px;
+        }
+
+        .contact-action.email {
+            background: var(--blue-light);
+        }
+
+        .contact-action.phone {
+            background: var(--green);
+            background: rgba(76, 175, 80, 0.15);
+        }
+
+        /* Schedule filters */
+        .schedule-filters {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .schedule-filter-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .schedule-filter-row {
+                flex-direction: column;
+            }
+        }
+
+        .date-select, .schedule-char-select {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--input-bg);
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        /* Back button */
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn:active {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .back-btn.hidden {
+            visibility: hidden;
+        }
+
+        /* Contact view toggle */
+        .view-toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 4px;
+            background: var(--gray-light);
+            border-radius: 10px;
+            padding: 4px;
+        }
+
+        .view-toggle-btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .view-toggle-btn.active {
+            background: var(--card-bg);
+            color: var(--pink);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Contact list table view */
+        .contacts-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .contacts-table th {
+            background: var(--pink);
+            color: white;
+            padding: 12px 10px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .contacts-table th:hover {
+            background: var(--pink-light);
+            background: #d81b60;
+        }
+
+        .contacts-table th .sort-arrow {
+            margin-left: 4px;
+            opacity: 0.5;
+        }
+
+        .contacts-table th.sorted .sort-arrow {
+            opacity: 1;
+        }
+
+        .contacts-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .contacts-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .contacts-table tr:hover td {
+            background: var(--gray-light);
+        }
+
+        .contacts-table .name-cell {
+            font-weight: 600;
+            color: var(--pink);
+            cursor: pointer;
+        }
+
+        .contacts-table .name-cell:hover {
+            text-decoration: underline;
+        }
+
+        .contacts-table a {
+            color: var(--blue);
+            text-decoration: none;
+        }
+
+        .contacts-table a:hover {
+            text-decoration: underline;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+        }
+
+        /* Hide cards or table based on view */
+        .contacts-cards.hidden,
+        .table-wrapper.hidden {
+            display: none;
+        }
+
+        /* Clear filters button */
+        .clear-filters-btn {
+            padding: 6px 14px;
+            border: 2px solid var(--gray);
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .clear-filters-btn:hover {
+            border-color: var(--pink);
+            color: var(--pink);
+            background: var(--pink-light);
+        }
+
+        .clear-filters-btn:active {
+            transform: scale(0.96);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button type="button" class="back-btn hidden" id="backBtn" title="Go back">←</button>
+        <div class="header-title">
+            <h1>TOOTSIE</h1>
+            <p>Script & Libretto Page Finder</p>
+        </div>
+        <button class="dark-toggle" id="darkToggle" title="Toggle dark mode">🌙</button>
+    </div>
+
+    <nav class="main-nav">
+        <button class="main-nav-tab active" data-view="dashboard">Home</button>
+        <button class="main-nav-tab" data-view="pagefinder">Pages</button>
+        <button class="main-nav-tab" data-view="schedule">Schedule</button>
+        <button class="main-nav-tab" data-view="contacts">Cast</button>
+    </nav>
+
+    <!-- Dashboard View -->
+    <div class="view active" id="dashboardView">
+        <div class="dashboard-container">
+            <div class="dashboard-welcome">
+                <h2>Welcome to TOOTSIE</h2>
+                <p>Quick access to everything you need</p>
+            </div>
+            <div class="dashboard-grid">
+                <button type="button" class="dashboard-btn pagefinder" onclick="switchView('pagefinder')">
+                    <div class="icon">📖</div>
+                    <div class="label">Page Finder</div>
+                    <div class="sublabel">Script & Libretto</div>
+                </button>
+                <button type="button" class="dashboard-btn schedule" onclick="switchView('schedule')">
+                    <div class="icon">📅</div>
+                    <div class="label">Schedule</div>
+                    <div class="sublabel">Rehearsals</div>
+                </button>
+                <button type="button" class="dashboard-btn contacts" onclick="switchView('contacts')">
+                    <div class="icon">👥</div>
+                    <div class="label">Cast Contact List</div>
+                    <div class="sublabel">Tap name to see their scenes</div>
+                </button>
+            </div>
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-num">38</div>
+                    <div class="stat-label">Scenes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num">24</div>
+                    <div class="stat-label">Songs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-num" id="castCount">17</div>
+                    <div class="stat-label">Cast</div>
+                </div>
+            </div>
+        </div>
+    </div><!-- End Dashboard View -->
+
+    <!-- Page Finder View -->
+    <div class="view" id="pagefinderView">
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search song, scene, or page #...">
+        </div>
+        <div class="recent-searches" id="recentSearches"></div>
+        <div class="dropdown-filters">
+            <div class="filter-row">
+                <div class="multi-select-wrapper">
+                    <button class="multi-select-btn" id="characterBtn" type="button">
+                        <span>All Characters</span>
+                    </button>
+                    <div class="multi-select-dropdown" id="characterDropdown"></div>
+                </div>
+                <select class="filter-select" id="songSelect" title="Filter by song">
+                    <option value="">All Songs</option>
+                </select>
+            </div>
+            <div class="selected-chars" id="selectedChars"></div>
+        </div>
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">All</button>
+            <button class="filter-tab" data-filter="songs">Songs Only</button>
+            <button class="filter-tab" data-filter="scenes">Scenes Only</button>
+            <button class="clear-filters-btn" id="clearPageFilters" type="button">Clear</button>
+        </div>
+    </div>
+
+    <div class="act-selector">
+        <button class="act-btn all active" data-act="all">All</button>
+        <button class="act-btn act1" data-act="1">ACT I</button>
+        <button class="act-btn act2" data-act="2">ACT II</button>
+    </div>
+
+    <div class="results" id="results"></div>
+    </div><!-- End Page Finder View -->
+
+    <!-- Schedule View -->
+    <div class="view" id="scheduleView">
+        <div class="schedule-container">
+            <div class="schedule-header">
+                <h2>Rehearsal Schedule</h2>
+                <p>February - March 2025</p>
+            </div>
+            <div class="schedule-filters">
+                <div class="schedule-filter-row">
+                    <select class="date-select" id="scheduleDateFilter">
+                        <option value="">All Dates</option>
+                    </select>
+                    <select class="schedule-char-select" id="scheduleCharFilter">
+                        <option value="">All Cast</option>
+                    </select>
+                    <button class="clear-filters-btn" id="clearScheduleFilters" type="button">Clear</button>
+                </div>
+            </div>
+            <div id="scheduleContent"></div>
+            <div class="schedule-note">
+                Schedule updated by stage management. Check for changes!
+            </div>
+        </div>
+    </div><!-- End Schedule View -->
+
+    <!-- Contacts View -->
+    <div class="view" id="contactsView">
+        <div class="contacts-container">
+            <div class="contacts-header">
+                <h2>Cast Contact List</h2>
+                <p>Tap name to see their scenes & songs</p>
+            </div>
+            <div class="view-toggle-row">
+                <div class="view-toggle">
+                    <button type="button" class="view-toggle-btn active" data-view="cards">Cards</button>
+                    <button type="button" class="view-toggle-btn" data-view="list">List</button>
+                </div>
+            </div>
+            <div class="contacts-cards" id="contactsList"></div>
+            <div class="table-wrapper hidden" id="contactsTable">
+                <table class="contacts-table">
+                    <thead>
+                        <tr>
+                            <th data-sort="first">First <span class="sort-arrow">↕</span></th>
+                            <th data-sort="last">Last <span class="sort-arrow">↕</span></th>
+                            <th data-sort="character">Character <span class="sort-arrow">↕</span></th>
+                            <th data-sort="email">Email <span class="sort-arrow">↕</span></th>
+                            <th data-sort="phone">Phone <span class="sort-arrow">↕</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="contactsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div><!-- End Contacts View -->
+
+    <div class="copied-toast" id="copiedToast">Copied!</div>
+
+    <button class="quick-jump" id="scrollTop" style="display:none;">↑</button>
+
+    <script>
+        // TOOTSIE Scene & Music Breakdown Data (from official breakdown spreadsheet)
+        const showData = [
+            // ACT I
+            { act: 1, scene: 1, scriptPg: "1-7", description: "A Broadway Stage - Present Day", songNum: "#1", songTitle: "Opening", librettoPg: "123", characters: "Ensemble, Ron, Michael" },
+            { act: 1, scene: 2, scriptPg: "8-10", description: "Bar - Lunchtime", songNum: "#2", songTitle: "Whaddya Do", librettoPg: "135", characters: "Michael, Jeff" },
+            { act: 1, scene: 2, scriptPg: "10-11", description: "Bar - Lunchtime", songNum: "#2A", songTitle: "Whaddya Do", librettoPg: "141", characters: "Ensemble" },
+            { act: 1, scene: 3, scriptPg: "12-19", description: "M&J Apartment", songNum: "#3", songTitle: "What's Gonna Happen", librettoPg: "142", characters: "Sandy, Michael, Jeff" },
+            { act: 1, scene: 4, scriptPg: "20-23", description: "Stan's Office", songNum: "#4", songTitle: "Whaddya Do (Reprise 1)", librettoPg: "150", characters: "Michael, Ensemble" },
+            { act: 1, scene: 5, scriptPg: "24-29", description: "Rehearsal Room", songNum: "#5", songTitle: "I Won't Let You Down (Auditions)", librettoPg: "153", characters: "Girl 1, Girl 2, Sandy" },
+            { act: 1, scene: 5, scriptPg: "24-29", description: "Rehearsal Room", songNum: "#6", songTitle: "I Won't Let You Down", librettoPg: "155", characters: "Dorothy, Ron, Rita, Susie" },
+            { act: 1, scene: 6, scriptPg: "30-33", description: "Bar - Evening", songNum: null, songTitle: null, librettoPg: null, characters: "Michael, Jeff" },
+            { act: 1, scene: 7, scriptPg: "34-41", description: "Rehearsal Studio - Day", songNum: "#6B", songTitle: "Ron Carlisle in His Element", librettoPg: "159", characters: "Ron, Rita, Susie, Julie, Max, Ensemble" },
+            { act: 1, scene: 7, scriptPg: "34-41", description: "Rehearsal Studio - Day", songNum: "#6C", songTitle: "Ron's Dance Break", librettoPg: "160", characters: "Ron, Rita, Susie, Julie, Max, Ensemble, Dorothy" },
+            { act: 1, scene: 7, scriptPg: "34-41", description: "Rehearsal Studio - Day", songNum: "#7", songTitle: "I'm Alive", librettoPg: "161", characters: "Ron, Rita, Susie, Julie, Max, Ensemble, Dorothy" },
+            { act: 1, scene: 8, scriptPg: "42-47", description: "Small Park", songNum: "#8", songTitle: "There Was John", librettoPg: "167", characters: "Dorothy, Julie, Ron" },
+            { act: 1, scene: 9, scriptPg: "48-52", description: "Rehearsal Room", songNum: "#9", songTitle: "I Like What She's Doing (Part 1)", librettoPg: "174", characters: "Ron, Rita, Susie, Julie, Max, Dorothy" },
+            { act: 1, scene: 9, scriptPg: "53-54", description: "Rehearsal Room", songNum: "#9A", songTitle: "I Like What She's Doing (Part 2)", librettoPg: "176", characters: "Ron, Rita, Susie, Julie, Max, Dorothy" },
+            { act: 1, scene: 9, scriptPg: "54-55", description: "Rehearsal Room", songNum: "#9B", songTitle: "I Like What She's Doing (Part 3)", librettoPg: "177", characters: "Ron, Rita, Susie, Julie, Max, Dorothy" },
+            { act: 1, scene: 9, scriptPg: "55-57", description: "Rehearsal Room", songNum: "#9C", songTitle: "I Like What She's Doing (Part 4)", librettoPg: "178", characters: "Ron, Rita, Susie, Julie, Max, Dorothy" },
+            { act: 1, scene: 9, scriptPg: "57-58", description: "Rehearsal Room", songNum: "#9D", songTitle: "I Like What She's Doing (Part 5)", librettoPg: "182", characters: "Dorothy, Ensemble" },
+            { act: 1, scene: 10, scriptPg: "59-63", description: "Julie's Apartment", songNum: "#10", songTitle: "Who Are You", librettoPg: "188", characters: "Michael, Julie" },
+            { act: 1, scene: 11, scriptPg: "64-67", description: "M&J Apartment (Continuous)", songNum: "#11", songTitle: "What's Gonna Happen (Reprise)", librettoPg: "194", characters: "Michael, Jeff, Sandy" },
+            { act: 1, scene: 11, scriptPg: "67-71", description: "M&J Apartment / Broadway Stage (Continuous)", songNum: "#12", songTitle: "Unstoppable", librettoPg: "195", characters: "Michael, Jeff, Julie, Ensemble" },
+
+            // ACT II
+            { act: 2, scene: 1, scriptPg: "72-75", description: "M&J Apartment", songNum: "#13", songTitle: "Jeff Sums It Up", librettoPg: "206", characters: "Michael, Jeff, Ensemble" },
+            { act: 2, scene: 2, scriptPg: "76-82", description: "Bar", songNum: "#14", songTitle: "Gone, Gone, Gone", librettoPg: "212", characters: "Michael, Jeff, Julie, Girls" },
+            { act: 2, scene: 3, scriptPg: "83-87", description: "Julie's Apartment", songNum: null, songTitle: null, librettoPg: null, characters: "Ron, Julie, Dorothy" },
+            { act: 2, scene: 3, scriptPg: "87", description: "Julie's Apartment", songNum: "#15", songTitle: "Who Are You (Reprise)", librettoPg: "221", characters: "Julie, Ensemble" },
+            { act: 2, scene: 4, scriptPg: "88-90", description: "M&J Apartment", songNum: "#16", songTitle: "This Thing", librettoPg: "223", characters: "Max, Dorothy, Neighbor" },
+            { act: 2, scene: 4, scriptPg: "90-91", description: "M&J Apartment", songNum: null, songTitle: null, librettoPg: null, characters: "Max, Dorothy, Jeff" },
+            { act: 2, scene: 4, scriptPg: "91-96", description: "M&J Apartment", songNum: "#17", songTitle: "Whaddya Do (Reprise 2)", librettoPg: "227", characters: "Dorothy/Michael, Jeff, Stan" },
+            { act: 2, scene: 5, scriptPg: "97-100", description: "Broadway Stage", songNum: "#18", songTitle: "The Most Important Night of My Life", librettoPg: "229", characters: "Ensemble" },
+            { act: 2, scene: 6, scriptPg: "101-103", description: "Michael's Dressing Room", songNum: null, songTitle: null, librettoPg: null, characters: "Rita, Dorothy" },
+            { act: 2, scene: 6, scriptPg: "103-105", description: "Michael's Dressing Room", songNum: "#19", songTitle: "Talk to Me Dorothy", librettoPg: "240", characters: "Dorothy, Julie, Ensemble" },
+            { act: 2, scene: 7, scriptPg: "106", description: "Onstage", songNum: "#20", songTitle: "Arrivederci!", librettoPg: "244", characters: "Ensemble" },
+            { act: 2, scene: 7, scriptPg: "106-108", description: "Onstage", songNum: null, songTitle: null, librettoPg: null, characters: "Dorothy, Julie, Max, Ensemble" },
+            { act: 2, scene: 7, scriptPg: "108", description: "Onstage", songNum: "#20A", songTitle: "Gadzooks!", librettoPg: "246", characters: "Dorothy, Julie, Max, Ensemble" },
+            { act: 2, scene: 7, scriptPg: "109", description: "Onstage", songNum: "#20B", songTitle: "Does Jeff Know?", librettoPg: "247", characters: "Dorothy, Julie, Max, Ensemble" },
+            { act: 2, scene: 8, scriptPg: "110-111", description: "M&J Apartment", songNum: "#21", songTitle: "What's Gonna Happen (Reprise 2)", librettoPg: "247", characters: "Jeff, Sandy" },
+            { act: 2, scene: 9, scriptPg: "111-114", description: "M&J Apartment", songNum: "#22", songTitle: "Michael's Reprise", librettoPg: "248", characters: "Jeff, Sandy, Michael" },
+            { act: 2, scene: 10, scriptPg: "115-117", description: "Small Park", songNum: "#23", songTitle: "Thank You", librettoPg: "248", characters: "Michael, Julie" },
+            { act: 2, scene: "Bows", scriptPg: null, description: "Stage (Fosse, Fosse, Brain Freeze!...)", songNum: "#24 & #24A", songTitle: "Bows", librettoPg: "251-252", characters: "CAST" }
+        ];
+
+        // State
+        let currentFilter = 'all';
+        let currentAct = 'all';
+        let selectedCharacters = JSON.parse(localStorage.getItem('tootsie-characters') || '[]');
+        let currentSong = '';
+        let searchQuery = '';
+        let recentSearches = JSON.parse(localStorage.getItem('tootsie-recent') || '[]');
+        let isDark = localStorage.getItem('tootsie-dark') === 'true';
+
+        // Navigation history for back button
+        let viewHistory = ['dashboard'];
+        let contactsViewMode = 'cards';
+        let contactsSortKey = 'first';
+        let contactsSortAsc = true;
+
+        // Initialize dark mode
+        if (isDark) {
+            document.body.setAttribute('data-theme', 'dark');
+            document.getElementById('darkToggle').textContent = '☀️';
+            document.getElementById('themeColor').content = '#1a1a2e';
+        }
+
+        // Extract unique characters
+        function getUniqueCharacters() {
+            const chars = new Set();
+            showData.forEach(item => {
+                item.characters.split(',').forEach(c => {
+                    const name = c.trim();
+                    if (name && name !== 'CAST' && name !== 'Ensemble' && name !== 'Girls') {
+                        // Handle special cases like "Dorothy/Michael"
+                        name.split('/').forEach(n => chars.add(n.trim()));
+                    }
+                });
+            });
+            return Array.from(chars).sort();
+        }
+
+        // Populate character multi-select dropdown
+        function initCharacterSelect() {
+            const dropdown = document.getElementById('characterDropdown');
+            const characters = getUniqueCharacters();
+
+            dropdown.innerHTML = characters.map(char => `
+                <div class="multi-select-option ${selectedCharacters.includes(char) ? 'selected' : ''}" data-char="${char}">
+                    <div class="multi-select-checkbox"></div>
+                    <span>${char}</span>
+                </div>
+            `).join('');
+
+            updateCharacterButton();
+            renderSelectedChips();
+        }
+
+        // Update the character button text
+        function updateCharacterButton() {
+            const btn = document.getElementById('characterBtn');
+            const span = btn.querySelector('span');
+            if (selectedCharacters.length === 0) {
+                span.textContent = 'All Characters';
+            } else if (selectedCharacters.length === 1) {
+                span.textContent = selectedCharacters[0];
+            } else {
+                span.textContent = `${selectedCharacters.length} Characters`;
+            }
+        }
+
+        // Render selected character chips
+        function renderSelectedChips() {
+            const container = document.getElementById('selectedChars');
+            container.innerHTML = selectedCharacters.map(char => `
+                <span class="char-chip" data-char="${char}">
+                    ${char}
+                    <span class="remove">×</span>
+                </span>
+            `).join('');
+        }
+
+        // Toggle character selection
+        function toggleCharacter(char) {
+            const idx = selectedCharacters.indexOf(char);
+            if (idx === -1) {
+                selectedCharacters.push(char);
+            } else {
+                selectedCharacters.splice(idx, 1);
+            }
+            localStorage.setItem('tootsie-characters', JSON.stringify(selectedCharacters));
+
+            // Update dropdown option styling
+            const option = document.querySelector(`.multi-select-option[data-char="${char}"]`);
+            if (option) {
+                option.classList.toggle('selected', selectedCharacters.includes(char));
+            }
+
+            updateCharacterButton();
+            renderSelectedChips();
+            renderCards();
+        }
+
+        // Populate song dropdown
+        function initSongSelect() {
+            const select = document.getElementById('songSelect');
+            const savedSong = localStorage.getItem('tootsie-song') || '';
+            const songs = showData.filter(d => d.songNum).map(d => ({ num: d.songNum, title: d.songTitle }));
+            const uniqueSongs = [];
+            const seen = new Set();
+            songs.forEach(s => {
+                if (!seen.has(s.num)) {
+                    seen.add(s.num);
+                    uniqueSongs.push(s);
+                }
+            });
+            uniqueSongs.forEach(song => {
+                const opt = document.createElement('option');
+                opt.value = song.num;
+                opt.textContent = `${song.num} - ${song.title}`;
+                if (song.num === savedSong) opt.selected = true;
+                select.appendChild(opt);
+            });
+            currentSong = savedSong;
+        }
+
+        // Rehearsal Schedule Data (Admin updateable)
+        const scheduleData = [
+            {
+                day: "Sunday",
+                date: "February 1",
+                offBook: true,
+                blocks: [
+                    {
+                        time: "6:30 PM",
+                        called: "Julie, Meghan, Leelee",
+                        items: [
+                            { type: "song", num: "#14", title: "Gone Gone Gone" }
+                        ]
+                    },
+                    {
+                        time: "7:00 PM",
+                        called: "All but SJS",
+                        items: [
+                            { type: "song", num: "#7", title: "I'm Alive" },
+                            { type: "scene", num: "Act 1 Sc 9", title: "All I Like What She's Doing" }
+                        ]
+                    },
+                    {
+                        time: "7:30 PM",
+                        called: "Add SJS",
+                        items: [
+                            { type: "song", num: "#12", title: "Unstoppable" },
+                            { type: "song", num: "#18", title: "Most Important Night" },
+                            { type: "song", num: "#2", title: "Opening" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Monday",
+                date: "February 2",
+                offBook: true,
+                blocks: [
+                    {
+                        time: "6:30 PM",
+                        called: "All",
+                        items: [
+                            { type: "song", num: "#2", title: "Opening" },
+                            { type: "song", num: "#7", title: "I'm Alive" },
+                            { type: "song", num: "#12", title: "Unstoppable" },
+                            { type: "run", num: "Run", title: "Act 1" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Tuesday",
+                date: "February 3",
+                offBook: true,
+                blocks: [
+                    {
+                        time: "6:30 PM",
+                        called: "All",
+                        items: [
+                            { type: "song", num: "#18", title: "The Most Important Night" },
+                            { type: "run", num: "Run", title: "Act 1" },
+                            { type: "song", num: "#20", title: "Arrivederci" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Wednesday",
+                date: "February 4",
+                offBook: true,
+                blocks: [
+                    {
+                        time: "6:30 PM",
+                        called: "All",
+                        items: [
+                            { type: "song", num: "#18", title: "Most Important Night" },
+                            { type: "run", num: "Run", title: "Act 2 (hopefully twice)" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Thursday",
+                date: "February 5",
+                offBook: false,
+                location: "TOOFAR Water & Natural Resources Foundation, Inc., 9228 E Gospel Island Rd, Inverness, FL 34450",
+                blocks: [
+                    {
+                        time: "6:30 PM - 7:00 PM",
+                        called: "All",
+                        items: [
+                            { type: "song", num: "#14", title: "Gone, Gone, Gone" }
+                        ]
+                    },
+                    {
+                        time: "7:00 PM - 7:20 PM",
+                        called: "All",
+                        items: [
+                            { type: "song", num: "#18", title: "The Most Important Night" }
+                        ]
+                    },
+                    {
+                        time: "7:20 PM - 9:00 PM",
+                        called: "All",
+                        items: [
+                            { type: "song", num: "#19", title: "End of Talk to Me Dorothy" },
+                            { type: "song", num: "#20", title: "Arrivederci" },
+                            { type: "song", num: "#13", title: "Jeff Sums It Up (Measure 74)" },
+                            { type: "song", num: "#12", title: "Unstoppable" },
+                            { type: "song", num: "#1", title: "Opening" },
+                            { type: "song", num: "#7", title: "I'm Alive" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Sunday",
+                date: "February 8",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                blocks: [
+                    {
+                        time: "10:00 AM - 12:30 PM",
+                        called: "Loading crew only",
+                        items: [
+                            { type: "scene", num: "Load", title: "Help w/ loading (only those helping)" }
+                        ]
+                    },
+                    {
+                        time: "12:30 PM - 3:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Run", title: "Music numbers" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Monday",
+                date: "February 9",
+                title: "Act I (Lights)",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                blocks: [
+                    {
+                        time: "6:30 PM - 9:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Run", title: "Act I" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Tuesday",
+                date: "February 10",
+                title: "Act II (Lights)",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                blocks: [
+                    {
+                        time: "6:30 PM - 9:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Run", title: "Act II" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Wednesday",
+                date: "February 11",
+                title: "Full Run (Lights, Sound, Wardrobe)",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                blocks: [
+                    {
+                        time: "6:30 PM - 9:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Run", title: "Full Show" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Thursday",
+                date: "February 12",
+                title: "TBD",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                blocks: [
+                    {
+                        time: "6:30 PM - 9:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "scene", num: "TBD", title: "To Be Determined" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Friday",
+                date: "February 13",
+                title: "The Valerie Player Gala",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                blocks: [
+                    {
+                        time: "7:00 PM",
+                        called: "Cast",
+                        items: [
+                            { type: "scene", num: "Gala", title: "The Valerie Player Gala" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Sunday",
+                date: "February 15",
+                title: "Run-Thru",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                blocks: [
+                    {
+                        time: "6:30 PM - 9:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Run", title: "Full Run-Thru" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Monday",
+                date: "February 16",
+                title: "Run-Thru",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                blocks: [
+                    {
+                        time: "6:30 PM - 9:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Run", title: "Full Run-Thru" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Tuesday",
+                date: "February 17",
+                title: "Run-Thru",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                blocks: [
+                    {
+                        time: "6:30 PM - 9:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Run", title: "Full Run-Thru" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Wednesday",
+                date: "February 18",
+                title: "Run-Thru",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                blocks: [
+                    {
+                        time: "6:30 PM - 9:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Run", title: "Full Run-Thru" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Thursday",
+                date: "February 19",
+                title: "Invited Dress Rehearsal (Friends & Family)",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                note: "Friends & family should arrive no earlier than 6:30 PM",
+                blocks: [
+                    {
+                        time: "Cast Call: 6:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Curtain", title: "7:00 PM" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Friday",
+                date: "February 20",
+                title: "🎭 TOOTSIE OPENING NIGHT!",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                isShow: true,
+                blocks: [
+                    {
+                        time: "Cast Call: 6:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Curtain", title: "7:00 PM" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Saturday",
+                date: "February 21",
+                title: "TOOTSIE Show 2",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                isShow: true,
+                blocks: [
+                    {
+                        time: "Cast Call: 6:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Curtain", title: "7:00 PM" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Sunday",
+                date: "February 22",
+                title: "TOOTSIE Show 3",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                isShow: true,
+                blocks: [
+                    {
+                        time: "Cast Call: 1:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Curtain", title: "2:00 PM" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Thursday",
+                date: "February 26",
+                title: "TOOTSIE Show 4",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                isShow: true,
+                blocks: [
+                    {
+                        time: "Cast Call: 6:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Curtain", title: "7:00 PM" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Friday",
+                date: "February 27",
+                title: "TOOTSIE Show 5",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                isShow: true,
+                blocks: [
+                    {
+                        time: "Cast Call: 6:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Curtain", title: "7:00 PM" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Saturday",
+                date: "February 28",
+                title: "TOOTSIE Show 6",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                isShow: true,
+                blocks: [
+                    {
+                        time: "Cast Call: 6:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Curtain", title: "7:00 PM" }
+                        ]
+                    }
+                ]
+            },
+            {
+                day: "Sunday",
+                date: "March 1",
+                title: "🎭 TOOTSIE Show 7 (Closing)",
+                offBook: false,
+                location: "The Valerie Theatre, 207 Courthouse Sq, Inverness, FL 34450",
+                isShow: true,
+                blocks: [
+                    {
+                        time: "Cast Call: 1:00 PM",
+                        called: "Full Cast",
+                        items: [
+                            { type: "run", num: "Curtain", title: "2:00 PM" }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // Cast Contact Data (from CSV)
+        const castData = [
+            { first: "Tiffany", last: "Adams", email: "adamstiff00@gmail.com", phone: "(352)667-9413", character: "Sandy Lester" },
+            { first: "Linda", last: "Bega", email: "linda@landmarkinverness.com", phone: "(352)212-2161", character: "Stage Manager" },
+            { first: "Jon", last: "Bolin", email: "jonathanbolin27@gmail.com", phone: "(352)464-0131", character: "Ensemble" },
+            { first: "Nathan", last: "Browne", email: "nvbrowne@gmail.com", phone: "(352)400-8979", character: "Max Van Horn / Craig" },
+            { first: "Howard", last: "Christ", email: "hnchrist3@gmail.com", phone: "(352)201-1370", character: "Stan" },
+            { first: "LeeLee", last: "Cruz", email: "ohmygoddess15@aol.com", phone: "(352)710-6216", character: "Ensemble" },
+            { first: "Emma", last: "Godman", email: "emmagodman123@gmail.com", phone: "(304)616-0001", character: "Ron Carlisle" },
+            { first: "Katherine", last: "Godman", email: "katgodman23@gmail.com", phone: "(304)839-9706", character: "Julie Nichols / Juliet" },
+            { first: "Jean", last: "Hamilton", email: "hayes.jean@gmail.com", phone: "(352)442-5885", character: "Rita Marshall" },
+            { first: "Jeremy", last: "Harrison", email: "jwharrison77@gmail.com", phone: "(727)250-8869", character: "Michael Dorsey / Dorothy Michaels" },
+            { first: "Elissa", last: "Kane", email: "elissakane0128@gmail.com", phone: "(352)613-7505", character: "Susie" },
+            { first: "Megan", last: "Provost", email: "chorusgirl8@yahoo.com", phone: "(352)560-9706", character: "Ensemble" },
+            { first: "Maitias", last: "Rogers", email: "extraordinary.t@gmail.com", phone: "(352)364-3587", character: "Ensemble" },
+            { first: "Leland", last: "Shipp", email: "Leland@lelandshipp.com", phone: "(352)710-6216", character: "Ensemble" },
+            { first: "Sally", last: "Smith-Adams", email: "sally_smith_adams@hotmail.com", phone: "(352)220-2150", character: "Musical Director" },
+            { first: "Eric", last: "Tremante", email: "etremante@hotmail.com", phone: "(352)228-1975", character: "Jeff Slater" },
+            { first: "Sue", last: "Whitney", email: "slwhitney54@gmail.com", phone: "(315)955-5758", character: "Director" }
+        ];
+
+        // Schedule filter state
+        let scheduleFilterDate = '';
+        let scheduleFilterChar = '';
+
+        // Render contacts list
+        function renderContacts() {
+            const container = document.getElementById('contactsList');
+            container.innerHTML = castData.map(person => {
+                const chars = person.character.split('/').map(c => c.trim());
+                return `
+                    <div class="contact-card">
+                        <div class="contact-header">
+                            <a class="contact-name" href="#" onclick="viewCharacterScenes('${chars[0]}'); return false;">
+                                ${person.first} ${person.last}
+                            </a>
+                            <span class="contact-character">${person.character}</span>
+                        </div>
+                        <div class="contact-body">
+                            <a class="contact-action email" href="mailto:${person.email}">
+                                <span class="action-icon">✉️</span>
+                                <span>Email</span>
+                            </a>
+                            <a class="contact-action phone" href="tel:${person.phone.replace(/[^\d+]/g, '')}">
+                                <span class="action-icon">📞</span>
+                                <span>${person.phone}</span>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render contacts table (list view)
+        function renderContactsTable() {
+            const tbody = document.getElementById('contactsTableBody');
+
+            // Sort data
+            const sorted = [...castData].sort((a, b) => {
+                let aVal = a[contactsSortKey].toLowerCase();
+                let bVal = b[contactsSortKey].toLowerCase();
+                if (aVal < bVal) return contactsSortAsc ? -1 : 1;
+                if (aVal > bVal) return contactsSortAsc ? 1 : -1;
+                return 0;
+            });
+
+            tbody.innerHTML = sorted.map(person => {
+                const chars = person.character.split('/').map(c => c.trim());
+                return `
+                    <tr>
+                        <td class="name-cell" onclick="viewCharacterScenes('${chars[0]}')">${person.first}</td>
+                        <td class="name-cell" onclick="viewCharacterScenes('${chars[0]}')">${person.last}</td>
+                        <td>${person.character}</td>
+                        <td><a href="mailto:${person.email}">${person.email}</a></td>
+                        <td><a href="tel:${person.phone.replace(/[^\d+]/g, '')}">${person.phone}</a></td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Update sort indicators
+            document.querySelectorAll('.contacts-table th').forEach(th => {
+                th.classList.remove('sorted');
+                const arrow = th.querySelector('.sort-arrow');
+                if (arrow) arrow.textContent = '↕';
+            });
+            const sortedTh = document.querySelector(`.contacts-table th[data-sort="${contactsSortKey}"]`);
+            if (sortedTh) {
+                sortedTh.classList.add('sorted');
+                sortedTh.querySelector('.sort-arrow').textContent = contactsSortAsc ? '↑' : '↓';
+            }
+        }
+
+        // Toggle contacts view mode
+        function setContactsViewMode(mode) {
+            contactsViewMode = mode;
+            const cardsContainer = document.getElementById('contactsList');
+            const tableContainer = document.getElementById('contactsTable');
+
+            document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === mode);
+            });
+
+            if (mode === 'cards') {
+                cardsContainer.classList.remove('hidden');
+                tableContainer.classList.add('hidden');
+            } else {
+                cardsContainer.classList.add('hidden');
+                tableContainer.classList.remove('hidden');
+                renderContactsTable();
+            }
+        }
+
+        // View character's scenes in Page Finder
+        function viewCharacterScenes(character) {
+            // Map actor character names to showData character names
+            const charMap = {
+                'Sandy Lester': 'Sandy',
+                'Max Van Horn': 'Max',
+                'Ron Carlisle': 'Ron',
+                'Julie Nichols': 'Julie',
+                'Rita Marshall': 'Rita',
+                'Michael Dorsey': 'Michael',
+                'Dorothy Michaels': 'Dorothy',
+                'Jeff Slater': 'Jeff',
+                'Susie': 'Susie',
+                'Stan': 'Stan'
+            };
+
+            const mappedChar = charMap[character] || character;
+
+            // Clear existing selections and set this character
+            selectedCharacters = [mappedChar];
+            localStorage.setItem('tootsie-characters', JSON.stringify(selectedCharacters));
+
+            // Update UI
+            initCharacterSelect();
+            renderCards();
+
+            // Switch to Page Finder view
+            switchView('pagefinder');
+        }
+
+        // Initialize schedule filters
+        function initScheduleFilters() {
+            const dateSelect = document.getElementById('scheduleDateFilter');
+            const charSelect = document.getElementById('scheduleCharFilter');
+
+            // Populate date options
+            scheduleData.forEach(day => {
+                const opt = document.createElement('option');
+                opt.value = day.date;
+                opt.textContent = `${day.day}, ${day.date}`;
+                dateSelect.appendChild(opt);
+            });
+
+            // Populate character options from cast
+            castData.filter(p => !['Stage Manager', 'Musical Director', 'Director', 'Ensemble'].includes(p.character))
+                .forEach(person => {
+                    const opt = document.createElement('option');
+                    opt.value = person.first;
+                    opt.textContent = `${person.first} ${person.last}`;
+                    charSelect.appendChild(opt);
+                });
+        }
+
+        // Render schedule with filters
+        function renderSchedule() {
+            const container = document.getElementById('scheduleContent');
+
+            // Apply filters
+            let filteredSchedule = scheduleData;
+
+            if (scheduleFilterDate) {
+                filteredSchedule = filteredSchedule.filter(day => day.date === scheduleFilterDate);
+            }
+
+            if (filteredSchedule.length === 0) {
+                container.innerHTML = '<div class="no-results"><div class="icon">📅</div><p>No rehearsals match your filter.</p></div>';
+                return;
+            }
+
+            container.innerHTML = filteredSchedule.map(day => `
+                <div class="day-card ${day.isShow ? 'show-day' : ''}">
+                    <div class="day-header ${day.isShow ? 'show-header' : ''}">
+                        <div class="day-name">${day.day}</div>
+                        <div class="day-date">${day.date}${day.title ? ` | ${day.title}` : ''}</div>
+                        ${day.offBook ? '<div class="off-book-badge">Off Book</div>' : ''}
+                    </div>
+                    <div class="day-body">
+                        ${day.blocks.map(block => `
+                            <div class="time-block">
+                                <div class="time-row">
+                                    <span class="time-badge">${block.time}</span>
+                                    <span class="called-people">${block.called}</span>
+                                </div>
+                                <div class="rehearsal-items">
+                                    ${block.items.map(item => `
+                                        <div class="rehearsal-item ${item.type === 'run' ? 'run-item' : ''} ${item.type === 'scene' ? 'scene-item' : ''}">
+                                            <span class="song-badge">${item.num}</span>
+                                            <span class="item-title">${item.title}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                        ${day.note ? `<div class="day-note">📝 ${day.note}</div>` : ''}
+                        ${day.location ? `<div class="day-location">📍 ${day.location}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Tab switching with history tracking
+        function switchView(viewName, addToHistory = true) {
+            document.querySelectorAll('.main-nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+
+            document.querySelector(`.main-nav-tab[data-view="${viewName}"]`).classList.add('active');
+            document.getElementById(`${viewName}View`).classList.add('active');
+
+            // Track navigation history
+            if (addToHistory && viewHistory[viewHistory.length - 1] !== viewName) {
+                viewHistory.push(viewName);
+                // Keep history manageable
+                if (viewHistory.length > 10) viewHistory.shift();
+            }
+
+            // Update back button visibility
+            updateBackButton();
+
+            localStorage.setItem('tootsie-view', viewName);
+        }
+
+        // Update back button visibility
+        function updateBackButton() {
+            const backBtn = document.getElementById('backBtn');
+            if (viewHistory.length > 1) {
+                backBtn.classList.remove('hidden');
+            } else {
+                backBtn.classList.add('hidden');
+            }
+        }
+
+        // Go back to previous view
+        function goBack() {
+            if (viewHistory.length > 1) {
+                viewHistory.pop(); // Remove current view
+                const previousView = viewHistory[viewHistory.length - 1];
+                switchView(previousView, false);
+            }
+        }
+
+        // Clear Page Finder filters
+        function clearPageFinderFilters() {
+            // Reset character selection
+            selectedCharacters = [];
+            localStorage.setItem('tootsie-characters', '[]');
+
+            // Reset song filter
+            currentSong = '';
+            localStorage.setItem('tootsie-song', '');
+            document.getElementById('songSelect').value = '';
+
+            // Reset search
+            searchQuery = '';
+            document.getElementById('searchInput').value = '';
+
+            // Reset act filter
+            currentAct = 'all';
+            document.querySelectorAll('.act-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.act-btn.all').classList.add('active');
+
+            // Reset type filter
+            currentFilter = 'all';
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('.filter-tab[data-filter="all"]').classList.add('active');
+
+            // Update UI
+            initCharacterSelect();
+            renderCards();
+        }
+
+        // Clear Schedule filters
+        function clearScheduleFilters() {
+            scheduleFilterDate = '';
+            scheduleFilterChar = '';
+            document.getElementById('scheduleDateFilter').value = '';
+            document.getElementById('scheduleCharFilter').value = '';
+            renderSchedule();
+        }
+
+        // Render recent searches
+        function renderRecentSearches() {
+            const container = document.getElementById('recentSearches');
+            if (recentSearches.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            container.innerHTML = recentSearches.slice(0, 5).map(s =>
+                `<button class="recent-chip" data-search="${s}">${s} <span class="close">×</span></button>`
+            ).join('');
+        }
+
+        // Add to recent searches
+        function addRecentSearch(query) {
+            if (!query || query.length < 2) return;
+            recentSearches = recentSearches.filter(s => s !== query);
+            recentSearches.unshift(query);
+            recentSearches = recentSearches.slice(0, 10);
+            localStorage.setItem('tootsie-recent', JSON.stringify(recentSearches));
+            renderRecentSearches();
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text, type) {
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('copiedToast');
+                toast.textContent = `${type} page ${text} copied!`;
+                toast.classList.add('show');
+                // Haptic feedback
+                if (navigator.vibrate) navigator.vibrate(50);
+                setTimeout(() => toast.classList.remove('show'), 1500);
+            });
+        }
+
+        function renderCards() {
+            const container = document.getElementById('results');
+            let filtered = showData;
+
+            // Filter by act
+            if (currentAct !== 'all') {
+                filtered = filtered.filter(item => item.act === parseInt(currentAct));
+            }
+
+            // Filter by characters (AND logic - scene must contain ALL selected characters)
+            if (selectedCharacters.length > 0) {
+                filtered = filtered.filter(item => {
+                    const sceneChars = item.characters.toLowerCase();
+                    // Check if ALL selected characters are in this scene
+                    return selectedCharacters.every(char => {
+                        const charLower = char.toLowerCase();
+                        return sceneChars.includes(charLower) ||
+                               sceneChars.includes('cast');
+                    });
+                });
+            }
+
+            // Filter by song
+            if (currentSong) {
+                filtered = filtered.filter(item => item.songNum === currentSong);
+            }
+
+            // Filter by type
+            if (currentFilter === 'songs') {
+                filtered = filtered.filter(item => item.songNum !== null);
+            } else if (currentFilter === 'scenes') {
+                const seen = new Set();
+                filtered = filtered.filter(item => {
+                    const key = `${item.act}-${item.scene}`;
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                });
+            }
+
+            // Search filter
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                filtered = filtered.filter(item => {
+                    const songNumMatch = item.songNum && (
+                        item.songNum.toLowerCase().includes(q) ||
+                        item.songNum.toLowerCase().replace('#', '').includes(q.replace('#', ''))
+                    );
+                    return (
+                        (item.songTitle && item.songTitle.toLowerCase().includes(q)) ||
+                        (item.description && item.description.toLowerCase().includes(q)) ||
+                        (item.characters && item.characters.toLowerCase().includes(q)) ||
+                        songNumMatch ||
+                        (item.scriptPg && item.scriptPg.includes(q)) ||
+                        (item.librettoPg && item.librettoPg.includes(q)) ||
+                        (`scene ${item.scene}`.toLowerCase().includes(q)) ||
+                        (`act ${item.act}`.includes(q))
+                    );
+                });
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <div class="icon">🔍</div>
+                        <p>No results found.<br>Try a different search.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const charText = selectedCharacters.length > 0 ? ` with ${selectedCharacters.join(' + ')}` : '';
+            const countText = `<div class="result-count">${filtered.length} result${filtered.length !== 1 ? 's' : ''}${charText}</div>`;
+
+            const cards = filtered.map(item => {
+                const isAct2 = item.act === 2;
+                const hasSong = item.songNum !== null;
+
+                return `
+                    <div class="card ${currentFilter === 'songs' ? 'song-only' : ''}">
+                        <div class="card-header ${isAct2 ? 'act2' : ''}">
+                            <div class="act-scene">
+                                <span class="badge act ${isAct2 ? 'act2' : ''}">ACT ${item.act}</span>
+                                <span class="badge scene">Scene ${item.scene}</span>
+                            </div>
+                            ${hasSong ? `<span class="song-num">Song ${item.songNum}</span>` : ''}
+                        </div>
+                        <div class="card-body">
+                            <div class="description">${item.description}</div>
+                            ${hasSong ? `<div class="song-title">"${item.songTitle}"</div>` : '<div class="song-title" style="color: var(--text-muted); font-style: italic;">Scene (No Song)</div>'}
+                            <div class="page-numbers">
+                                <div class="page-box script" onclick="copyToClipboard('${item.scriptPg || '—'}', 'Script')">
+                                    <div class="page-label">Script Page</div>
+                                    <div class="page-num">${item.scriptPg || '—'}</div>
+                                    <div class="tap-hint">tap to copy</div>
+                                </div>
+                                <div class="page-box libretto" onclick="copyToClipboard('${item.librettoPg || '—'}', 'Libretto')">
+                                    <div class="page-label">Libretto Page</div>
+                                    <div class="page-num">${item.librettoPg || '—'}</div>
+                                    <div class="tap-hint">tap to copy</div>
+                                </div>
+                            </div>
+                            <div class="characters"><strong>Characters:</strong> ${item.characters}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = countText + cards;
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            renderCards();
+        });
+
+        document.getElementById('searchInput').addEventListener('blur', (e) => {
+            if (e.target.value.trim()) {
+                addRecentSearch(e.target.value.trim());
+            }
+        });
+
+        document.getElementById('recentSearches').addEventListener('click', (e) => {
+            const chip = e.target.closest('.recent-chip');
+            if (!chip) return;
+
+            if (e.target.classList.contains('close')) {
+                const search = chip.dataset.search;
+                recentSearches = recentSearches.filter(s => s !== search);
+                localStorage.setItem('tootsie-recent', JSON.stringify(recentSearches));
+                renderRecentSearches();
+            } else {
+                const search = chip.dataset.search;
+                document.getElementById('searchInput').value = search;
+                searchQuery = search;
+                renderCards();
+            }
+        });
+
+        // Character multi-select toggle
+        document.getElementById('characterBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const btn = e.currentTarget;
+            const dropdown = document.getElementById('characterDropdown');
+            btn.classList.toggle('open');
+            dropdown.classList.toggle('open');
+        });
+
+        // Character option selection
+        document.getElementById('characterDropdown').addEventListener('click', (e) => {
+            const option = e.target.closest('.multi-select-option');
+            if (option) {
+                e.stopPropagation();
+                toggleCharacter(option.dataset.char);
+            }
+        });
+
+        // Remove character chip
+        document.getElementById('selectedChars').addEventListener('click', (e) => {
+            const chip = e.target.closest('.char-chip');
+            if (chip) {
+                toggleCharacter(chip.dataset.char);
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const wrapper = document.querySelector('.multi-select-wrapper');
+            if (!wrapper.contains(e.target)) {
+                document.getElementById('characterBtn').classList.remove('open');
+                document.getElementById('characterDropdown').classList.remove('open');
+            }
+        });
+
+        document.getElementById('songSelect').addEventListener('change', (e) => {
+            currentSong = e.target.value;
+            localStorage.setItem('tootsie-song', currentSong);
+            renderCards();
+        });
+
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.filter;
+                renderCards();
+            });
+        });
+
+        document.querySelectorAll('.act-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.act-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentAct = btn.dataset.act;
+                renderCards();
+            });
+        });
+
+        // Dark mode toggle
+        document.getElementById('darkToggle').addEventListener('click', () => {
+            isDark = !isDark;
+            localStorage.setItem('tootsie-dark', isDark);
+            if (isDark) {
+                document.body.setAttribute('data-theme', 'dark');
+                document.getElementById('darkToggle').textContent = '☀️';
+                document.getElementById('themeColor').content = '#1a1a2e';
+            } else {
+                document.body.removeAttribute('data-theme');
+                document.getElementById('darkToggle').textContent = '🌙';
+                document.getElementById('themeColor').content = '#e91e63';
+            }
+        });
+
+        // Scroll to top button
+        const scrollBtn = document.getElementById('scrollTop');
+        window.addEventListener('scroll', () => {
+            scrollBtn.style.display = window.scrollY > 200 ? 'flex' : 'none';
+        });
+        scrollBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Back button
+        document.getElementById('backBtn').addEventListener('click', goBack);
+
+        // Main nav tab switching
+        document.querySelectorAll('.main-nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchView(tab.dataset.view);
+            });
+        });
+
+        // Contacts view toggle (cards/list)
+        document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setContactsViewMode(btn.dataset.view);
+            });
+        });
+
+        // Contacts table header sorting
+        document.querySelectorAll('.contacts-table th[data-sort]').forEach(th => {
+            th.addEventListener('click', () => {
+                const key = th.dataset.sort;
+                if (contactsSortKey === key) {
+                    contactsSortAsc = !contactsSortAsc;
+                } else {
+                    contactsSortKey = key;
+                    contactsSortAsc = true;
+                }
+                renderContactsTable();
+            });
+        });
+
+        // Schedule filter listeners
+        document.getElementById('scheduleDateFilter').addEventListener('change', (e) => {
+            scheduleFilterDate = e.target.value;
+            renderSchedule();
+        });
+
+        document.getElementById('scheduleCharFilter').addEventListener('change', (e) => {
+            scheduleFilterChar = e.target.value;
+            renderSchedule();
+        });
+
+        // Clear filters button listeners
+        document.getElementById('clearPageFilters').addEventListener('click', clearPageFinderFilters);
+        document.getElementById('clearScheduleFilters').addEventListener('click', clearScheduleFilters);
+
+        // Initialize
+        initCharacterSelect();
+        initSongSelect();
+        initScheduleFilters();
+        renderRecentSearches();
+        renderCards();
+        renderSchedule();
+        renderContacts();
+
+        // Update cast count on dashboard
+        document.getElementById('castCount').textContent = castData.length;
+
+        // Restore last view (default to dashboard)
+        const savedView = localStorage.getItem('tootsie-view') || 'dashboard';
+        viewHistory = [savedView]; // Initialize history with starting view
+        switchView(savedView, false); // Don't add to history on init
+
+        // Unregister service worker to fix caching issues
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                registrations.forEach(reg => reg.unregister());
+            });
+            caches.keys().then(names => {
+                names.forEach(name => caches.delete(name));
+            });
+        }
+    </script>
+</body>
+</html>
